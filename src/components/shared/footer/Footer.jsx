@@ -1,7 +1,18 @@
 import React from "react";
+import { Container } from "react-bootstrap";
+import "./footer.scss";
 
 const Footer = () => {
-  return <div>Footer</div>;
+  return (
+    <div className="footer mt-5">
+      <Container>
+        <hr />
+        <strong className="d-block text-center">
+          Developed by <span className="text-danger">Tanvin Ahmed</span>
+        </strong>
+      </Container>
+    </div>
+  );
 };
 
 export default Footer;
