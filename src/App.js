@@ -7,6 +7,9 @@ import Footer from "./components/shared/footer/Footer";
 import Single from "./pages/single/Single";
 import Write from "./pages/write/Write";
 import { Container } from "react-bootstrap";
+import Admin from "./pages/admin/Admin";
+import PendingblogsTable from "./components/admin/pendingBlogs/pendingBlogsTable/PendingblogsTable";
+import AddNewAdmin from "./components/admin/addNewAdmin/AddNewAdmin";
 
 const Layout = () => {
   return (
@@ -17,6 +20,15 @@ const Layout = () => {
       </Container>
       <Footer />
     </>
+  );
+};
+
+const AdminPanel = () => {
+  return (
+    <section className="section-height">
+      <Admin />
+      <Outlet />
+    </section>
   );
 };
 
@@ -36,6 +48,20 @@ const router = createBrowserRouter([
       {
         path: "/write",
         element: <Write />,
+      },
+      {
+        path: "/admin",
+        element: <AdminPanel />,
+        children: [
+          {
+            path: "pending-blogs/:pageNumber",
+            element: <PendingblogsTable />,
+          },
+          {
+            path: "add-new-admin",
+            element: <AddNewAdmin />,
+          },
+        ],
       },
     ],
   },

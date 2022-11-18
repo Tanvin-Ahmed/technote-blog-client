@@ -65,6 +65,24 @@ const Header = () => {
             </NavDropdown>
             <Nav.Link>Jhone</Nav.Link>
             <Nav.Link>logout</Nav.Link>
+            <NavDropdown title="Admin" id="basic-nav-dropdown">
+              <NavDropdown.Item>
+                <Link
+                  to="/admin/pending-blogs/1"
+                  style={{ textDecoration: "none" }}
+                >
+                  Manage Pending Blogs
+                </Link>
+              </NavDropdown.Item>
+              <NavDropdown.Item>
+                <Link
+                  to="/admin/add-new-admin"
+                  style={{ textDecoration: "none" }}
+                >
+                  Add new admin
+                </Link>
+              </NavDropdown.Item>
+            </NavDropdown>
             <Nav.Link>
               <Link to="/write" className="write-button" title="Write a note">
                 <FontAwesomeIcon icon={faPenToSquare} />
