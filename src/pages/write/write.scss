@@ -1,0 +1,24 @@
+.write {
+  gap: 20px;
+  .content {
+    flex: 5;
+
+    .editorContainer {
+      overflow-y: auto;
+    }
+  }
+
+  .menu {
+    flex: 2;
+    gap: 20px;
+
+    .item {
+      flex: 1;
+    }
+
+    .category-container {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
+}

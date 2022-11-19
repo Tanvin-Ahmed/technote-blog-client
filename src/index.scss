@@ -1,13 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap");
+
 body {
   margin: 0;
 }
 
 .section-height {
   max-width: 100%;
-  min-height: 75vh;
+  min-height: 70vh;
 }
 
 .border-shadow {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2),
     -5px -5px 10px rgba(255, 255, 255, 0.2);
+}
+
+.logo {
+  font-family: "Rubik Glitch", cursive;
 }

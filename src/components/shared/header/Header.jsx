@@ -9,7 +9,9 @@ const Header = () => {
   return (
     <Navbar bg="light" expand="lg" className="header">
       <Container>
-        <Navbar.Brand href="#cover">Navbar</Navbar.Brand>
+        <Navbar.Brand href="#cover" className="logo">
+          Tech Blog
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <div className="m-auto"></div>
