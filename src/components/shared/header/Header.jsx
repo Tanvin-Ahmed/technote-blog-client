@@ -1,5 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -66,7 +66,9 @@ const Header = () => {
               </NavDropdown.Item>
             </NavDropdown>
             <Nav.Link>Jhone</Nav.Link>
-            <Nav.Link>logout</Nav.Link>
+            <Nav.Link>
+              <Link to={"/login"}>Login</Link>
+            </Nav.Link>
             <NavDropdown title="Admin" id="basic-nav-dropdown">
               <NavDropdown.Item>
                 <Link

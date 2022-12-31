@@ -4,10 +4,32 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button, Form } from "react-bootstrap";
 
-const Write = () => {
-  const [value, setValue] = useState("");
+const categories = [
+  "Web Development",
+  "App Development",
+  "React.js",
+  "Next.js",
+  "Angular",
+  "Vue",
+  "Node.js",
+  "Express.js",
+  "Database",
+  "Electronics",
+  "Artificial Intelligence",
+  "Mechine Learning",
+  "Data Mining",
+  "DataStructures  & Algorithm",
+  "Cloud Computing",
+  "Technology",
+];
 
-  console.log(value);
+const Write = () => {
+  const [text, setText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleSelectCategory = (e) => {
+    setSelectedCategory(e.target.value);
+  };
 
   return (
     <section className="section-height pt-4 d-flex write">
@@ -17,8 +39,8 @@ const Write = () => {
           <ReactQuill
             className="h-100"
             theme="snow"
-            value={value}
-            onChange={setValue}
+            value={text}
+            onChange={setText}
           />
         </div>
       </div>
@@ -53,14 +75,20 @@ const Write = () => {
         </div>
         <div className="item border-shadow p-3 category-container">
           <h3>Category</h3>
-          <Form.Check type={"radio"} label={"Web Development"} />
-          <Form.Check type={"radio"} label={"App Development"} />
-          <Form.Check type={"radio"} label={"React.js"} />
-          <Form.Check type={"radio"} label={"Node.js"} />
-          <Form.Check type={"radio"} label={"Next.js"} />
-          <Form.Check type={"radio"} label={"React Native"} />
-          <Form.Check type={"radio"} label={"MongoDB"} />
-          <Form.Check type={"radio"} label={"Mongoose"} />
+          <Form.Control type="text" placeholder="Search Category" />
+          <hr />
+          <div className="categories">
+            {categories.map((category, index) => (
+              <Form.Check
+                key={index}
+                type={"radio"}
+                value={category}
+                label={category}
+                checked={selectedCategory === category}
+                onChange={handleSelectCategory}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
