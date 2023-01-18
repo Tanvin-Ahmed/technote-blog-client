@@ -3,6 +3,7 @@ import { Button, Container, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { register } from "../../apis/user";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
+import Loader from "../../components/shared/loader/Loader";
 import "./login.scss";
 
 const Register = () => {
@@ -24,8 +25,8 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { user, errorMessage } = await register(userInfo);
-    setError(errorMessage);
+    const { user, error } = await register(userInfo);
+    setError(error);
     setSuccess(user);
     setLoading(false);
   };
@@ -79,22 +80,28 @@ const Register = () => {
                 Register
               </Button>
             </div>
-            {error && (
-              <CustomAlert
-                variant={"danger"}
-                message={error}
-                setState={setError}
-              />
-            )}
-            {success && (
-              <CustomAlert
-                variant={"success"}
-                message={success}
-                setState={setSuccess}
-              />
-            )}
+            <div className="text-center my-4">
+              {loading && <Loader />}
+              {error && (
+                <CustomAlert
+                  variant={error.status === 409 ? "warning" : "danger"}
+                  message={error.message}
+                  setState={setError}
+                />
+              )}
+              {success && (
+                <CustomAlert
+                  variant={"success"}
+                  message={success}
+                  setState={setSuccess}
+                />
+              )}
+            </div>
             <small>
-              Don you have an account? <Link to="/login">Login</Link>
+              Don you have an account?{" "}
+              <Link to="/login">
+                <strong>Login</strong>
+              </Link>
             </small>
           </Form>
         </div>

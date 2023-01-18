@@ -67,7 +67,9 @@ const Header = () => {
             </NavDropdown>
             <Nav.Link>Jhone</Nav.Link>
             <Nav.Link>
-              <Link to={"/login"}>Login</Link>
+              <Link to={"/login"} style={{ textDecoration: "none" }}>
+                Login
+              </Link>
             </Nav.Link>
             <NavDropdown title="Admin" id="basic-nav-dropdown">
               <NavDropdown.Item>

@@ -1,7 +1,7 @@
 import React from "react";
 
 const Single = () => {
-  return <div>Single</div>;
+  return <section className="section-height">Single</section>;
 };
 
 export default Single;

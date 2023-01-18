@@ -2,12 +2,15 @@ import { axiosInstance } from "./axiosInstance";
 
 export const register = async (info) => {
   try {
-    const user = await axiosInstance.post("/users/register", info);
+    const { data } = await axiosInstance.post("/users/register", info);
 
-    return { user, errorMessage: null };
+    return { user: data.message, error: null };
   } catch (error) {
     return {
-      errorMessage: error.response.data.message,
+      error: {
+        message: error.response.data.message || error.message,
+        status: error.response.status,
+      },
       user: null,
     };
   }
@@ -15,12 +18,15 @@ export const register = async (info) => {
 
 export const login = async (info) => {
   try {
-    const user = await axiosInstance.post("/users/login", info);
+    const { data } = await axiosInstance.post("/users/login", info);
 
-    return { user, errorMessage: null };
+    return { user: data.message, error: null };
   } catch (error) {
     return {
-      errorMessage: error.response.data.message,
+      error: {
+        message: error.response.data.message || error.message,
+        status: error.response.status,
+      },
       user: null,
     };
   }

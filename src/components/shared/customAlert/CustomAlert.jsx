@@ -12,12 +12,12 @@ const CustomAlert = ({ variant, message, setState }) => {
   return (
     <Alert variant={variant} className="mt-3">
       <div className="d-flex justify-content-between align-items-center">
-        <span>
+        <div style={{ textAlign: "left" }}>
           <h4>
             <strong>{status[variant]}!</strong>
           </h4>
           {message}
-        </span>
+        </div>
         <button
           type="button"
           className="btn-close"
