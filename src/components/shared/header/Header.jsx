@@ -1,11 +1,20 @@
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { removeDataFromLS } from "../../../utils/localStorage";
+import { userContext } from "../../context/UserContext";
 import "./header.scss";
 
 const Header = () => {
+  const { userInfo, setUserInfo } = useContext(userContext);
+
+  const handleLogout = () => {
+    setUserInfo({});
+    removeDataFromLS("access-token");
+  };
+
   return (
     <Navbar bg="light" expand="lg" className="header">
       <Container>
@@ -65,30 +74,38 @@ const Header = () => {
                 </Link>
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link>Jhone</Nav.Link>
-            <Nav.Link>
-              <Link to={"/login"} style={{ textDecoration: "none" }}>
-                Login
-              </Link>
-            </Nav.Link>
-            <NavDropdown title="Admin" id="basic-nav-dropdown">
-              <NavDropdown.Item>
-                <Link
-                  to="/admin/pending-blogs/1"
-                  style={{ textDecoration: "none" }}
-                >
-                  Manage Pending Blogs
+            {!!Object.keys(userInfo).length ? (
+              <>
+                <Nav.Link>{userInfo?.username}</Nav.Link>
+                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+              </>
+            ) : (
+              <Nav.Link>
+                <Link to={"/login"} style={{ textDecoration: "none" }}>
+                  Login
                 </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link
-                  to="/admin/add-new-admin"
-                  style={{ textDecoration: "none" }}
-                >
-                  Add new admin
-                </Link>
-              </NavDropdown.Item>
-            </NavDropdown>
+              </Nav.Link>
+            )}
+            {userInfo?.isAdmin && (
+              <NavDropdown title="Admin" id="basic-nav-dropdown">
+                <NavDropdown.Item>
+                  <Link
+                    to="/admin/pending-blogs/1"
+                    style={{ textDecoration: "none" }}
+                  >
+                    Manage Pending Blogs
+                  </Link>
+                </NavDropdown.Item>
+                <NavDropdown.Item>
+                  <Link
+                    to="/admin/add-new-admin"
+                    style={{ textDecoration: "none" }}
+                  >
+                    Add new admin
+                  </Link>
+                </NavDropdown.Item>
+              </NavDropdown>
+            )}
             <Nav.Link>
               <Link to="/write" className="write-button" title="Write a note">
                 <FontAwesomeIcon icon={faPenToSquare} />

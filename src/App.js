@@ -1,15 +1,16 @@
+import { Container } from "react-bootstrap";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Home from "./pages/home/Home";
-import Register from "./pages/auth/Register";
-import Login from "./pages/auth/Login";
-import Header from "./components/shared/header/Header";
+import AddNewAdmin from "./components/admin/addNewAdmin/AddNewAdmin";
+import PendingblogsTable from "./components/admin/pendingBlogs/pendingBlogsTable/PendingblogsTable";
 import Footer from "./components/shared/footer/Footer";
+import Header from "./components/shared/header/Header";
+import PrivateRoute from "./components/shared/privateRoute/PrivateRoute";
+import Admin from "./pages/admin/Admin";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Home from "./pages/home/Home";
 import Single from "./pages/single/Single";
 import Write from "./pages/write/Write";
-import { Container } from "react-bootstrap";
-import Admin from "./pages/admin/Admin";
-import PendingblogsTable from "./components/admin/pendingBlogs/pendingBlogsTable/PendingblogsTable";
-import AddNewAdmin from "./components/admin/addNewAdmin/AddNewAdmin";
 
 const Layout = () => {
   return (
@@ -47,7 +48,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/write",
-        element: <Write />,
+        element: (
+          <PrivateRoute>
+            <Write />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/admin",

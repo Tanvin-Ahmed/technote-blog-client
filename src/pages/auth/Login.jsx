@@ -1,20 +1,26 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { login } from "../../apis/user";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { login } from "../../apis/auth";
+import { userContext } from "../../components/context/UserContext";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import Loader from "../../components/shared/loader/Loader";
+import { getUserData } from "../../utils/auth/tokenValidation";
 import "./login.scss";
 
 const Login = () => {
+  const { setUserInfo: setUser } = useContext(userContext);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({
     password: "",
     email: "",
   });
-
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const from = location.state?.from?.pathname || "/";
 
   const handleChange = (e) => {
     setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -28,6 +34,8 @@ const Login = () => {
     setError(error);
     setSuccess(user);
     setLoading(false);
+    setUser(getUserData());
+    navigate(from);
   };
 
   return (
