@@ -8,7 +8,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = getDataFromLS("tech-note-user");
+    const token = getDataFromLS("access-token");
 
     if (token) {
       config.headers["Authorization"] = "Bearer " + token;

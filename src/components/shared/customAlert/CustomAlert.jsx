@@ -18,12 +18,14 @@ const CustomAlert = ({ variant, message, setState }) => {
           </h4>
           {message}
         </div>
-        <button
-          type="button"
-          className="btn-close"
-          data-bs-dismiss="alert"
-          onClick={() => setState(null)}
-        ></button>
+        {setState && (
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="alert"
+            onClick={() => setState(null)}
+          ></button>
+        )}
       </div>
     </Alert>
   );

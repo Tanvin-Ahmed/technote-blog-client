@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { posts } from "../../utils/fakeData";
 
-const Menu = () => {
+const Menu = ({ category }) => {
+  useEffect(() => {
+    // get blogs by category from server
+  }, []);
+
   return (
     <div className="menu">
       <h3>Other post you may like</h3>
