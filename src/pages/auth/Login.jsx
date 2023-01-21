@@ -32,10 +32,12 @@ const Login = () => {
 
     const { user, error } = await login(userInfo);
     setError(error);
-    setSuccess(user);
     setLoading(false);
-    setUser(getUserData());
-    navigate(from);
+    if (!error) {
+      setSuccess(user);
+      setUser(getUserData());
+      navigate(from);
+    }
   };
 
   return (

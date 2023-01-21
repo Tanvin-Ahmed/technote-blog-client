@@ -6,6 +6,8 @@ import { userContext } from "../../components/context/UserContext";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import Loader from "../../components/shared/loader/Loader";
 import { getUserData } from "../../utils/auth/tokenValidation";
+import { compressImage } from "../../utils/handleImages/compressImage";
+import { uploadImageInImageBB } from "../../utils/handleImages/uploadImage";
 import "./login.scss";
 
 const Register = () => {
@@ -18,6 +20,8 @@ const Register = () => {
     email: "",
   });
 
+  const [image, setImage] = useState(null);
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -25,19 +29,40 @@ const Register = () => {
   const from = location.state?.from?.pathname || "/";
 
   const handleChange = (e) => {
-    setUserInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setUserInfo((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    const { user, error } = await register(userInfo);
+    // setLoading(true);
+    const { compressedImage, errorMessage } = await compressImage(image);
+
+    if (errorMessage) return;
+
+    const { img, errorMessage: imgUploadError } = await uploadImageInImageBB(
+      compressedImage,
+      "user"
+    );
+
+    if (imgUploadError) return console.log(imgUploadError);
+
+    const userData = {
+      img,
+      ...userInfo,
+    };
+
+    const { user, error } = await register(userData);
     setError(error);
-    setSuccess(user);
     setLoading(false);
-    setUser(getUserData());
-    navigate(from);
+    if (!error) {
+      setSuccess(user);
+      setUser(getUserData());
+      navigate(from);
+    }
   };
 
   return (
@@ -83,6 +108,22 @@ const Register = () => {
                 value={userInfo.password}
                 required
               />
+            </Form.Group>
+            <Form.Group className="mt-4">
+              <Form.Control
+                type="file"
+                id="img-selection"
+                accept="image/png, image/gif, image/jpeg, image/*"
+                style={{ display: "none" }}
+                onChange={(e) => setImage(e.target.files[0])}
+              />
+              <Form.Label
+                htmlFor="img-selection"
+                className="btn btn-outline-primary"
+                style={{ width: "100%", padding: "6px" }}
+              >
+                Upload Image
+              </Form.Label>
             </Form.Group>
             <div className="d-flex justify-content-center align-items-center">
               <Button type="submit" className="mt-4">

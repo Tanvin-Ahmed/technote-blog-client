@@ -6,8 +6,8 @@ import { Button, Col, Row } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteBlog, getSingleBlog } from "../../apis/blog";
 import { userContext } from "../../components/context/UserContext";
+import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import Menu from "../../components/single/Menu";
-import { textToHtml } from "../../utils/textToHtml";
 import "./single.scss";
 
 const Single = () => {
@@ -16,6 +16,7 @@ const Single = () => {
   const { userInfo } = useContext(userContext);
   const [blogData, setBlogData] = useState({});
   const [error, setError] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
 
   const handleRoute = () => {
     navigate(`/write?edit=2`);
@@ -24,6 +25,7 @@ const Single = () => {
   useEffect(() => {
     const get = async (blogId) => {
       const { blog, errorMessage } = await getSingleBlog(blogId);
+
       setBlogData(blog);
       setError(errorMessage);
     };
@@ -34,54 +36,81 @@ const Single = () => {
 
   const handleDelete = async () => {
     const { message, errorMessage } = await deleteBlog(id);
-    navigate("/");
+    if (message) {
+      navigate(-1);
+    } else {
+      setDeleteError(errorMessage);
+    }
   };
 
   return (
     <section className="section-height single mt-5">
-      <Row>
-        <Col md={"8"} sm={"12"}>
-          <img
-            src="https://images.pexels.com/photos/7008010/pexels-photo-7008010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-            className="post-img rounded border-shadow"
-          />
-          <div className="user mt-4">
+      {error ? (
+        <CustomAlert message={error} variant={"danger"} />
+      ) : (
+        <Row>
+          <Col md={"8"} sm={"12"}>
             <img
-              src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bWFufGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-              alt=""
-              className="avatar border-shadow"
+              src={`../blogImgs/${blogData?.img}`}
+              alt="blog-img"
+              className="post-img rounded border-shadow"
             />
-            <div className="info">
-              <h6 className="m-0 p-0">Jhon</h6>
-              <p className="m-0 p-0">{moment(blogData?.date).fromNow()}</p>
-
-              {userInfo.id && userInfo.id === blogData?.authorId ? (
-                <div className="buttons">
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={handleRoute}
-                  >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={handleDelete}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </div>
-              ) : null}
+            <div className="my-2">
+              <small>Category: {blogData?.category}</small>
             </div>
-          </div>
-          <div className="post-content">{textToHtml(blogData.description)}</div>
-        </Col>
-        <Col md={"4"} sm={"12"}>
-          <Menu category={blogData?.category} />
-        </Col>
-      </Row>
+            <div className="user mt-3">
+              {blogData?.authorImg && (
+                <img
+                  src={`../userImgs/${blogData?.authorImg}`}
+                  alt=""
+                  className="avatar border-shadow"
+                />
+              )}
+              <div className="info">
+                <h6 className="m-0 p-0">{blogData?.authorName}</h6>
+                <p className="m-0 p-0">{moment(blogData?.date).fromNow()}</p>
+
+                {userInfo.id && userInfo.id === blogData?.authorId ? (
+                  <div className="buttons">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={handleRoute}
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={handleDelete}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            {deleteError && (
+              <div className="my-3">
+                <CustomAlert
+                  variant={"danger"}
+                  message={deleteError}
+                  setState={setDeleteError}
+                />
+              </div>
+            )}
+            <div className="post-content mt-4">
+              <h3>Overview</h3>
+              <div
+                dangerouslySetInnerHTML={{ __html: blogData.description }}
+              ></div>
+            </div>
+          </Col>
+          <Col md={"4"} sm={"12"}>
+            <Menu category={blogData?.category} />
+          </Col>
+        </Row>
+      )}
     </section>
   );
 };

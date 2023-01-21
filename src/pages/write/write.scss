@@ -1,15 +1,12 @@
 .write {
   gap: 20px;
   .content {
-    flex: 5;
-
     .editorContainer {
       overflow-y: auto;
     }
   }
 
   .menu {
-    flex: 2;
     gap: 20px;
 
     .category-container {

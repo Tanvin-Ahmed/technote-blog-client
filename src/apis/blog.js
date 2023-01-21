@@ -16,12 +16,12 @@ export const uploadBlog = async (info) => {
   }
 };
 
-export const getAllBlogs = (category = "") => {
+export const getAllBlogs = async (category = "") => {
   try {
-    const { data } = axiosInstance.get(`/post?cat=${category}`);
+    const { data } = await axiosInstance.get(`/post?cat=${category}`);
 
     return {
-      blogs: data,
+      blogs: data || [],
       errorMessage: null,
     };
   } catch (error) {
@@ -35,6 +35,7 @@ export const getAllBlogs = (category = "") => {
 export const getSingleBlog = async (id) => {
   try {
     const { data } = await axiosInstance.get(`/post/${id}`);
+
     return {
       blog: data,
       errorMessage: null,
