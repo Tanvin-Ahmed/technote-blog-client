@@ -76,8 +76,18 @@ const Header = () => {
             </NavDropdown>
             {!!Object.keys(userInfo).length ? (
               <>
-                <Nav.Link>{userInfo?.username}</Nav.Link>
-                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                <NavDropdown title={userInfo?.username} id="profile-dropdown">
+                  <NavDropdown.Item>
+                    <Nav.Link>
+                      <Link to={"/profile"} style={{ textDecoration: "none" }}>
+                        Profile
+                      </Link>
+                    </Nav.Link>
+                  </NavDropdown.Item>
+                  <NavDropdown.Item>
+                    <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                  </NavDropdown.Item>
+                </NavDropdown>
               </>
             ) : (
               <Nav.Link>

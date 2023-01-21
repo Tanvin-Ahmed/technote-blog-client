@@ -34,7 +34,7 @@ export const getUserData = () => {
   const pattern = checkTokenSyntax(token);
   if (pattern) {
     const { data } = jwt_decode(token);
-
-    return data;
+    const info = { ...data, img: JSON.parse(data.img) };
+    return info;
   }
 };

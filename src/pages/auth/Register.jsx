@@ -38,7 +38,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // setLoading(true);
+    if (!image) {
+      alert("User photo is required");
+      return;
+    }
+
+    setLoading(true);
     const { compressedImage, errorMessage } = await compressImage(image);
 
     if (errorMessage) return;
@@ -113,6 +118,7 @@ const Register = () => {
               <Form.Control
                 type="file"
                 id="img-selection"
+                name="image"
                 accept="image/png, image/gif, image/jpeg, image/*"
                 style={{ display: "none" }}
                 onChange={(e) => setImage(e.target.files[0])}
