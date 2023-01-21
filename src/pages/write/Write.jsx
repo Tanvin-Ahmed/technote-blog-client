@@ -6,6 +6,12 @@ import "react-quill/dist/quill.snow.css";
 import { useSearchParams } from "react-router-dom";
 import { getSingleBlog, updateBlog, uploadBlog } from "../../apis/blog";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
+import DragAndDropImg from "../../components/shared/dragAndDrop/DragAndDropImg";
+import { compressImage } from "../../utils/handleImages/compressImage";
+import {
+  deleteImageFromImageBB,
+  uploadImageInImageBB,
+} from "../../utils/handleImages/uploadImage";
 import "./write.scss";
 
 const categories = [
@@ -50,7 +56,10 @@ const Write = () => {
         setError(errorMessage);
         return;
       }
-      setSelectedBlog(blog);
+      const blogData = { ...blog, img: JSON.parse(blog.img) };
+      setSelectedBlog(blogData);
+      setText(blogData.description);
+      setTitle(blogData.title);
       setSelectedCategory(blog.category);
     };
 
@@ -62,26 +71,70 @@ const Write = () => {
   };
 
   const handleCreate = async () => {
-    const blogForm = new FormData();
-    blogForm.append("file", img);
-    blogForm.append("title", title);
-    blogForm.append("category", selectedCategory);
-    blogForm.append("description", text);
-    blogForm.append("date", moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"));
+    if (!img) {
+      alert("User photo is required");
+      return;
+    }
 
-    await uploadBlog(blogForm);
-    // const successMessage =
-    //   "Thank you to post a blog. Please wait for publish your blog by authority of Tech Blog";
-    // if (blog) setUploadStatus({ message: successMessage, status: "success" });
-    // else setUploadStatus({ message: errorMessage, status: "danger" });
+    const { compressedImage, errorMessage: compressError } =
+      await compressImage(img);
+
+    if (compressError) return;
+
+    const { img: image, errorMessage: imgUploadError } =
+      await uploadImageInImageBB(compressedImage, "user");
+
+    if (imgUploadError) return console.log(imgUploadError);
+
+    const blogForm = {
+      img: image,
+      title,
+      selectedCategory,
+      description: text,
+      createAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      updateAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      category: selectedCategory,
+    };
+
+    const { blog, errorMessage } = await uploadBlog(blogForm);
+    const successMessage =
+      "Thank you to post a blog. Please wait for publish your blog by authority of Tech Blog";
+    if (blog) setUploadStatus({ message: successMessage, status: "success" });
+    else setUploadStatus({ message: errorMessage, status: "danger" });
   };
 
   const handleUpdate = async () => {
-    const updateBlogForm = new FormData();
-    updateBlogForm.append("file", img);
-    updateBlogForm.append("title", title);
-    updateBlogForm.append("category", selectedCategory);
-    updateBlogForm.append("description", text);
+    let updateBlogForm = {};
+    if (img) {
+      const { message: deleteImgMessage, errorMessage: deleteImgError } =
+        await deleteImageFromImageBB(selectedBlog?.img?.delete_url);
+
+      if (deleteImgError) return console.log(deleteImgError);
+
+      const { compressedImage, errorMessage: compressError } =
+        await compressImage(img);
+
+      if (compressError) return console.log(compressError);
+
+      const { img: image, errorMessage: imgUploadError } =
+        await uploadImageInImageBB(compressedImage, "user");
+
+      if (imgUploadError) return console.log(imgUploadError);
+
+      updateBlogForm = {
+        img: image,
+      };
+    }
+
+    updateBlogForm = {
+      ...updateBlogForm,
+      title,
+      selectedCategory,
+      description: text,
+      updateAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      status: "pending",
+      category: selectedCategory,
+    };
 
     const { message, errorMessage } = await updateBlog(updateBlogForm);
     if (message) setUploadStatus({ message, status: "success" });
@@ -112,6 +165,20 @@ const Write = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
+              {(img || selectedBlog?.img) && (
+                <div className="mt-3">
+                  <img
+                    src={
+                      img
+                        ? URL.createObjectURL(img)
+                        : selectedBlog?.img?.display_url
+                    }
+                    alt=""
+                    className="w-100 rounded border-shadow"
+                  />
+                  <p className="text-center">Cover Photo</p>
+                </div>
+              )}
               <div
                 className="editorContainer mt-4 border-shadow"
                 style={{ height: "500px" }}
@@ -144,20 +211,7 @@ const Write = () => {
               <span className="d-block pb-2">
                 <b>Visibility: </b> Public
               </span>
-              <Form.Control
-                type="file"
-                id="img-selection"
-                accept="image/png, image/gif, image/jpeg, image/*"
-                style={{ display: "none" }}
-                onChange={(e) => setImg(e.target.files[0])}
-              />
-              <Form.Label
-                htmlFor="img-selection"
-                className="btn btn-outline-primary"
-                style={{ width: "100%", padding: "4px" }}
-              >
-                Upload Image
-              </Form.Label>
+              <DragAndDropImg setImage={setImg} />
               <div className="d-flex justify-content-between align-items-center pt-3">
                 <Button className="btn-outline-warning" size="sm">
                   Save as a draft

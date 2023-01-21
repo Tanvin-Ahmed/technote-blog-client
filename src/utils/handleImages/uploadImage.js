@@ -45,6 +45,7 @@ export const uploadImageInImageBB = async (image, type = "user") => {
 
 export const deleteImageFromImageBB = async (url) => {
   try {
+    if (!url) return;
     await axios.delete(url, config);
 
     return { message: "image deleted successfully!", errorMessage: null };

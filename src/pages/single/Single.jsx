@@ -25,8 +25,12 @@ const Single = () => {
   useEffect(() => {
     const get = async (blogId) => {
       const { blog, errorMessage } = await getSingleBlog(blogId);
-
-      setBlogData(blog);
+      const blogData = {
+        ...blog,
+        img: JSON.parse(blog.img),
+        authorImg: JSON.parse(blog.authorImg),
+      };
+      setBlogData(blogData);
       setError(errorMessage);
     };
     if (id) {
@@ -51,7 +55,7 @@ const Single = () => {
         <Row>
           <Col md={"8"} sm={"12"}>
             <img
-              src={`../blogImgs/${blogData?.img}`}
+              src={blogData?.img?.display_url}
               alt="blog-img"
               className="post-img rounded border-shadow"
             />
@@ -59,9 +63,9 @@ const Single = () => {
               <small>Category: {blogData?.category}</small>
             </div>
             <div className="user mt-3">
-              {blogData?.authorImg && (
+              {blogData?.authorImg?.display_url && (
                 <img
-                  src={`../userImgs/${blogData?.authorImg}`}
+                  src={blogData?.authorImg?.display_url}
                   alt=""
                   className="avatar border-shadow"
                 />

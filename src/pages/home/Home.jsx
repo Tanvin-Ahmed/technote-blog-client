@@ -21,7 +21,13 @@ const Home = () => {
   useEffect(() => {
     const get = async (cat = "") => {
       const { blogs, errorMessage } = await getAllBlogs(cat);
-      setBlogs(blogs);
+      if (blogs.length) {
+        const blogsData = blogs.map((blog) => ({
+          ...blog,
+          img: JSON.parse(blog.img),
+        }));
+        setBlogs(blogsData);
+      }
       setError(errorMessage);
     };
 
@@ -46,7 +52,7 @@ const Home = () => {
                   <Row>
                     <Col md={"4"} sm={"12"}>
                       <Card.Img
-                        src={`./blogImgs/${post.img}`}
+                        src={post?.img?.display_url}
                         className="card-img border-shadow"
                         alt="blog img"
                       />
