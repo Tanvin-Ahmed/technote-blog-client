@@ -4,11 +4,13 @@ import React, { useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { removeDataFromLS } from "../../../utils/localStorage";
+import { blogContext } from "../../context/BlogContext";
 import { userContext } from "../../context/UserContext";
 import "./header.scss";
 
 const Header = () => {
   const { userInfo, setUserInfo } = useContext(userContext);
+  const { pendingBlogsCurrentPage } = useContext(blogContext);
 
   const handleLogout = () => {
     setUserInfo({});
@@ -100,7 +102,7 @@ const Header = () => {
               <NavDropdown title="Admin" id="basic-nav-dropdown">
                 <NavDropdown.Item>
                   <Link
-                    to="/admin/pending-blogs/1"
+                    to={`/admin/pending-blogs/${pendingBlogsCurrentPage}`}
                     style={{ textDecoration: "none" }}
                   >
                     Manage Pending Blogs

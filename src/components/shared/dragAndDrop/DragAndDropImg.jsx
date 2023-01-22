@@ -13,7 +13,6 @@ export default function DragAndDropImg({ setImage }) {
   });
 
   useEffect(() => {
-    console.log(acceptedFiles[0]);
     setImage(acceptedFiles[0]);
   }, [acceptedFiles, setImage]);
 

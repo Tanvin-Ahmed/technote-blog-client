@@ -11,10 +11,6 @@ export const uploadImageInImageBB = async (image, type = "user") => {
     const folderName =
       type === "blog" ? "tech-blog-cover-image" : "tech-blog-user-image";
 
-    // const folderId = await axios(
-    //   `https://api.imgbb.com/folder/by-name/${folderName}?key=${process.env.REACT_APP_IMAGEBB_API_KEY}`
-    // );
-
     const formData = new FormData();
     formData.append("image", image);
     formData.append("folder_name", folderName);
@@ -45,11 +41,16 @@ export const uploadImageInImageBB = async (image, type = "user") => {
 
 export const deleteImageFromImageBB = async (url) => {
   try {
+    console.log(url);
     if (!url) return;
-    await axios.delete(url, config);
+    await axios.delete(
+      `${url}?key=${process.env.REACT_APP_IMAGEBB_API_KEY}`,
+      config
+    );
 
     return { message: "image deleted successfully!", errorMessage: null };
   } catch (error) {
+    console.log(error);
     return { message: null, errorMessage: "Image not deleted" };
   }
 };

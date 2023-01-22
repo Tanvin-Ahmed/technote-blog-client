@@ -1,12 +1,13 @@
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteBlog, getSingleBlog } from "../../apis/blog";
 import { userContext } from "../../components/context/UserContext";
+import Avatar from "../../components/shared/avatar/Avatar";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
+import TimeStamp from "../../components/shared/timeStapm/TimeStamp";
 import Menu from "../../components/single/Menu";
 import "./single.scss";
 
@@ -64,15 +65,16 @@ const Single = () => {
             </div>
             <div className="user mt-3">
               {blogData?.authorImg?.display_url && (
-                <img
-                  src={blogData?.authorImg?.display_url}
-                  alt=""
-                  className="avatar border-shadow"
-                />
+                <Avatar src={blogData?.authorImg?.display_url} alt="" />
               )}
               <div className="info">
                 <h6 className="m-0 p-0">{blogData?.authorName}</h6>
-                <p className="m-0 p-0">{moment(blogData?.date).fromNow()}</p>
+                <p className="m-0 p-0">
+                  <TimeStamp
+                    createAt={blogData.createAt}
+                    updateAt={blogData.updateAt}
+                  />
+                </p>
 
                 {userInfo.id && userInfo.id === blogData?.authorId ? (
                   <div className="buttons">

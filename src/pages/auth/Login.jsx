@@ -33,7 +33,7 @@ const Login = () => {
     const { user, error } = await login(userInfo);
     setError(error);
     setLoading(false);
-    if (!error) {
+    if (user) {
       setSuccess(user);
       setUser(getUserData());
       navigate(from);

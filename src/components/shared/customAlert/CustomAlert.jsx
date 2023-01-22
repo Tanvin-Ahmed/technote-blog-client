@@ -4,7 +4,7 @@ import { Alert } from "react-bootstrap";
 const status = {
   warning: "Warning",
   success: "Success",
-  danger: "Danger",
+  danger: "Error",
   info: "Information",
 };
 

@@ -16,9 +16,16 @@ export const uploadBlog = async (info) => {
   }
 };
 
-export const getAllBlogs = async (category = "") => {
+export const getAllBlogs = async (
+  category = "",
+  status = "approved",
+  limit,
+  offset
+) => {
   try {
-    const { data } = await axiosInstance.get(`/post?cat=${category}`);
+    const { data } = await axiosInstance.get(
+      `/post?cat=${category}&status=${status}&limit=${limit}&offset=${offset}`
+    );
 
     return {
       blogs: data || [],
@@ -27,6 +34,22 @@ export const getAllBlogs = async (category = "") => {
   } catch (error) {
     return {
       blogs: [],
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
+export const getTotalBlogCount = async (status) => {
+  try {
+    const { data } = await axiosInstance.get(`/post/get-count/${status}`);
+
+    return {
+      count: data.count,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      count: 0,
       errorMessage: error.response.data.message || error.message,
     };
   }
@@ -51,6 +74,21 @@ export const getSingleBlog = async (id) => {
 export const updateBlog = async (updateInfo) => {
   try {
     const { data } = await axiosInstance.put("/post/update", updateInfo);
+    return {
+      message: data.message,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      message: null,
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
+export const approveBlog = async (updateInfo) => {
+  try {
+    const { data } = await axiosInstance.put("/post/approve-blog", updateInfo);
     return {
       message: data.message,
       errorMessage: null,
