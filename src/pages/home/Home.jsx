@@ -21,9 +21,9 @@ const Home = () => {
     approvedBlogsTotalPage,
     approvedBlogsCurrentPage,
     setApprovedBlogsCurrentPage,
+    blogPageTracker,
   } = useContext(blogContext);
 
-  const [blogs, setBlogs] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -45,32 +45,62 @@ const Home = () => {
           ...blog,
           img: JSON.parse(blog.img),
         }));
-        setBlogs(blogsData);
+        setApprovedBlogs(blogsData);
       }
       setError(errorMessage);
       setLoading(false);
     };
-    if (searchParams.get("cat")) {
-      get(searchParams.get("cat"));
-    } else {
-      get();
+    if (blogPageTracker.current === -1) {
+      if (searchParams.get("cat")) {
+        get(searchParams.get("cat"));
+      } else {
+        get();
+      }
+      setApprovedBlogsCurrentPage(1);
+      blogPageTracker.current++;
     }
-  }, [searchParams, approvedBlogsCurrentPage, rowsPerPage]);
+  }, [
+    searchParams,
+    approvedBlogsCurrentPage,
+    rowsPerPage,
+    setApprovedBlogs,
+    blogPageTracker,
+    setApprovedBlogsCurrentPage,
+  ]);
+
+  const loadMore = async () => {
+    if (blogPageTracker.current < approvedBlogsCurrentPage) {
+      blogPageTracker.current++;
+
+      setLoading(true);
+      const { blogs, errorMessage } = await getAllBlogs(
+        searchParams.get("cat") || "",
+        "approved",
+        rowsPerPage,
+        approvedBlogsCurrentPage * rowsPerPage
+      );
+      if (blogs.length) {
+        const blogsData = blogs.map((blog) => ({
+          ...blog,
+          img: JSON.parse(blog.img),
+        }));
+        setApprovedBlogs((prev) => [...prev, ...blogsData]);
+      }
+      setError(errorMessage);
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="section-height home">
       <div className="posts mt-4">
-        {loading ? (
-          <div className="text-center">
-            <Loader />
-          </div>
-        ) : error ? (
+        {error ? (
           <CustomAlert message={error} variant={"warning"} />
         ) : (
           <>
             <h1>Popular blogs</h1>
-            {!!blogs?.length
-              ? blogs.map((post) => (
+            {!!approvedBlogs?.length
+              ? approvedBlogs.map((post) => (
                   <Card className="w-100 my-5 p-4" key={post.id}>
                     <Row>
                       <Col md={"4"} sm={"12"}>
@@ -84,6 +114,9 @@ const Home = () => {
                         <Card.Body>
                           <Card.Title>{post.title}</Card.Title>
                           <Card.Text>
+                            <small className="text-primary">
+                              {post?.category_name}
+                            </small>
                             <p>
                               {textToHtml(getSubString(post.description, 400))}
                               ...
@@ -111,6 +144,17 @@ const Home = () => {
               : null}
           </>
         )}
+        {loading ? (
+          <div className="text-center">
+            <Loader />
+          </div>
+        ) : null}
+        {approvedBlogsTotalPage > 1 &&
+          approvedBlogsTotalPage > approvedBlogsCurrentPage + 1 && (
+            <div className="text-center">
+              <Button onClick={loadMore}>More blog</Button>
+            </div>
+          )}
       </div>
     </section>
   );

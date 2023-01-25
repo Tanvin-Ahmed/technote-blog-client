@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getAllBlogs } from "../../../../apis/blog";
+import { approveBlog, deleteBlog, getAllBlogs } from "../../../../apis/blog";
 import { getSubString } from "../../../../utils/getSubString";
 import { textToHtml } from "../../../../utils/textToHtml";
 import { blogContext } from "../../../context/BlogContext";
@@ -24,12 +24,15 @@ const PendingblogsTable = () => {
     pendingBlogsCurrentPage,
     setPendingBlogsCurrentPage,
     rowsPerPage,
+    pendingBlogPageTracker,
   } = useContext(blogContext);
 
   const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [error, setError] = useState(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState({});
+  const [updateStatus, setUpdateStatus] = useState(null);
 
   const handleModalOpen = (blog) => {
     setSelectedBlog({
@@ -40,15 +43,39 @@ const PendingblogsTable = () => {
     setIsOpen(true);
   };
 
-  const handleApprove = (id) => {
-    // approve api call
+  const handleApprove = async (blog) => {
+    setUpdateLoading(true);
+    const { message, errorMessage } = await approveBlog({
+      user_id: blog.authorId,
+      id: blog.id,
+      status: "approved",
+    });
+
+    setUpdateLoading(false);
+    if (message) {
+      setPendingBlogs((prev) => prev.filter((b) => b.id !== blog.id));
+      setUpdateStatus({ message, status: "success" });
+    } else {
+      setUpdateStatus({ message: errorMessage, status: "danger" });
+    }
   };
-  const handleRemove = (id) => {
-    // remove api call
+
+  const handleRemove = async (id) => {
+    setUpdateLoading(true);
+
+    const { message, errorMessage } = await deleteBlog(id);
+
+    setUpdateLoading(false);
+    if (message) {
+      setPendingBlogs((prev) => prev.filter((b) => b.id !== id));
+      setUpdateStatus({ message, status: "success" });
+    } else {
+      setUpdateStatus({ message: errorMessage, status: "danger" });
+    }
   };
 
   useEffect(() => {
-    setPendingBlogsCurrentPage(pageNumber);
+    setPendingBlogsCurrentPage(Number(pageNumber));
   }, [setPendingBlogsCurrentPage, pageNumber]);
 
   useEffect(() => {
@@ -58,7 +85,7 @@ const PendingblogsTable = () => {
         "",
         "pending",
         rowsPerPage,
-        (pendingBlogsCurrentPage - 1) * rowsPerPage
+        pendingBlogsCurrentPage * rowsPerPage
       );
       if (blogs.length) {
         setPendingBlogs((prev) => [...prev, ...blogs]);
@@ -66,8 +93,16 @@ const PendingblogsTable = () => {
       setError(errorMessage);
       setLoading(false);
     };
-    get();
-  }, [setPendingBlogs, pendingBlogsCurrentPage, rowsPerPage]);
+    if (pendingBlogPageTracker.current < pendingBlogsCurrentPage) {
+      get();
+      pendingBlogPageTracker.current++;
+    }
+  }, [
+    pendingBlogsCurrentPage,
+    rowsPerPage,
+    setPendingBlogs,
+    pendingBlogPageTracker,
+  ]);
 
   return (
     <div>
@@ -79,7 +114,9 @@ const PendingblogsTable = () => {
 
       <h3 className="text-center mb-5">Manage Pending Blogs</h3>
       {loading ? (
-        <Loader />
+        <div className="text-center">
+          <Loader />
+        </div>
       ) : error ? (
         <CustomAlert variant={"danger"} message={error} />
       ) : (
@@ -97,8 +134,8 @@ const PendingblogsTable = () => {
             {pendingBlogs.length > 0 &&
               (rowsPerPage > 0
                 ? pendingBlogs.slice(
-                    (pendingBlogsCurrentPage - 1) * rowsPerPage,
-                    (pendingBlogsCurrentPage - 1) * rowsPerPage + rowsPerPage
+                    pendingBlogsCurrentPage * rowsPerPage,
+                    pendingBlogsCurrentPage * rowsPerPage + rowsPerPage
                   )
                 : pendingBlogs
               ).map((blog, index) => (
@@ -120,7 +157,7 @@ const PendingblogsTable = () => {
                       className="border-shadow py-1 px-2 rounded bg-success text-light"
                       style={{ cursor: "pointer" }}
                       title="Approve"
-                      onClick={() => handleApprove(blog._id)}
+                      onClick={() => handleApprove(blog)}
                     >
                       <FontAwesomeIcon icon={faCheckSquare} />
                     </span>
@@ -128,7 +165,7 @@ const PendingblogsTable = () => {
                       className="border-shadow py-1 px-2 rounded bg-danger text-light"
                       style={{ cursor: "pointer" }}
                       title="Remove"
-                      onClick={() => handleRemove(blog._id)}
+                      onClick={() => handleRemove(blog.id)}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </span>
@@ -141,8 +178,7 @@ const PendingblogsTable = () => {
 
       <Paginate
         pages={pendingBlogsTotalPage}
-        page={pendingBlogsCurrentPage}
-        isAdmin
+        page={pendingBlogsCurrentPage + 1}
         route="/admin/pending-blogs"
         setPage={setPendingBlogsCurrentPage}
       />
@@ -152,6 +188,21 @@ const PendingblogsTable = () => {
         setIsOpen={setIsOpen}
         blog={selectedBlog}
       />
+      {updateStatus && (
+        <div className="mt-4">
+          {updateLoading ? (
+            <div className="text-center">
+              <Loader />
+            </div>
+          ) : (
+            <CustomAlert
+              message={updateStatus?.message}
+              variant={updateStatus?.status}
+              setState={setUpdateStatus}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

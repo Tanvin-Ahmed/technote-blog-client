@@ -20,7 +20,7 @@ const Single = () => {
   const [deleteError, setDeleteError] = useState(null);
 
   const handleRoute = () => {
-    navigate(`/write?edit=2`);
+    navigate(`/write?edit=${id}`);
   };
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const Single = () => {
               className="post-img rounded border-shadow"
             />
             <div className="my-2">
-              <small>Category: {blogData?.category}</small>
+              <string>Category: {blogData?.category_name}</string>
             </div>
             <div className="user mt-3">
               {blogData?.authorImg?.display_url && (
@@ -108,12 +108,13 @@ const Single = () => {
             <div className="post-content mt-4">
               <h3>Overview</h3>
               <div
+                className="w-100"
                 dangerouslySetInnerHTML={{ __html: blogData.description }}
               ></div>
             </div>
           </Col>
           <Col md={"4"} sm={"12"}>
-            <Menu category={blogData?.category} />
+            <Menu category={blogData?.categoryId} blogId={blogData.id} />
           </Col>
         </Row>
       )}

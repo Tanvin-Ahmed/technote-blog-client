@@ -17,7 +17,7 @@ const PendingBlogPreviewModal = ({ modalIsOpen, setIsOpen, blog }) => {
     const { message, errorMessage } = await deleteBlog(blog.id);
 
     if (message) {
-      setPendingBlogs((prev) => prev.filter((b) => b.id === blog.id));
+      setPendingBlogs((prev) => prev.filter((b) => b.id !== blog.id));
     }
 
     const success = { message, status: "success" };
@@ -43,7 +43,7 @@ const PendingBlogPreviewModal = ({ modalIsOpen, setIsOpen, blog }) => {
     });
 
     if (message) {
-      setPendingBlogs((prev) => prev.filter((b) => b.id === blog.id));
+      setPendingBlogs((prev) => prev.filter((b) => b.id !== blog.id));
     }
 
     const success = { message, status: "success" };
@@ -67,12 +67,15 @@ const PendingBlogPreviewModal = ({ modalIsOpen, setIsOpen, blog }) => {
       modalTitle="Pending Blog Preview"
     >
       <div className="d-flex justify-content-center align-items-center flex-column">
-        <img src={blog?.img?.display_url} className="w-50 rounded" alt="" />
+        <img src={blog?.img?.display_url} className="w-75 rounded" alt="" />
         <div className="mt-3"></div>
         <Avatar src={blog?.authorImg?.display_url} />
         <h6>{blog?.authorName}</h6>
         <h2 className="mt-3">{blog.title}</h2>
-        <p dangerouslySetInnerHTML={{ __html: blog.description }} />
+        <div
+          className="w-100"
+          dangerouslySetInnerHTML={{ __html: blog.description }}
+        />
         <small>
           <TimeStamp createAt={blog?.createAt} updateAt={blog?.updateAt} />
         </small>

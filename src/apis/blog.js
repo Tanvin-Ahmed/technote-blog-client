@@ -57,7 +57,7 @@ export const getTotalBlogCount = async (status) => {
 
 export const getSingleBlog = async (id) => {
   try {
-    const { data } = await axiosInstance.get(`/post/${id}`);
+    const { data } = await axiosInstance.get(`/post/single/${id}`);
 
     return {
       blog: data,

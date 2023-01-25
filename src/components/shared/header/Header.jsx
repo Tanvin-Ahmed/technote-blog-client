@@ -110,10 +110,10 @@ const Header = () => {
                 </NavDropdown.Item>
                 <NavDropdown.Item>
                   <Link
-                    to="/admin/add-new-admin"
+                    to="/admin/manage-category"
                     style={{ textDecoration: "none" }}
                   >
-                    Add new admin
+                    Manage Category
                   </Link>
                 </NavDropdown.Item>
               </NavDropdown>

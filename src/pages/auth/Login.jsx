@@ -72,7 +72,7 @@ const Login = () => {
               />
             </Form.Group>
             <div className="d-flex justify-content-center align-items-center">
-              <Button type="submit" className="mt-4">
+              <Button type="submit" className="mt-4" disabled={loading}>
                 Login
               </Button>
             </div>

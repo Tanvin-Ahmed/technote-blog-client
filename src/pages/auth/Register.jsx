@@ -2,8 +2,11 @@ import React, { useContext, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { register } from "../../apis/auth";
+import avatar from "../../assets/img/avatar.png";
 import { userContext } from "../../components/context/UserContext";
+import Avatar from "../../components/shared/avatar/Avatar";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
+import DragAndDropImg from "../../components/shared/dragAndDrop/DragAndDropImg";
 import Loader from "../../components/shared/loader/Loader";
 import { getUserData } from "../../utils/auth/tokenValidation";
 import { compressImage } from "../../utils/handleImages/compressImage";
@@ -72,8 +75,15 @@ const Register = () => {
 
   return (
     <Container>
-      <div className="form-container">
+      <div className="form-container my-5">
         <div className="card p-4 main">
+          <div className="text-center">
+            <Avatar
+              src={image ? URL.createObjectURL(image) : avatar}
+              alt=""
+              styles={{ width: "100px", height: "100px" }}
+            />
+          </div>
           <Form onSubmit={handleSubmit}>
             <Form.Group>
               <Form.Label for="exampleInputEmail1" class="form-label mt-4">
@@ -114,25 +124,11 @@ const Register = () => {
                 required
               />
             </Form.Group>
-            <Form.Group className="mt-4">
-              <Form.Control
-                type="file"
-                id="img-selection"
-                name="image"
-                accept="image/png, image/gif, image/jpeg, image/*"
-                style={{ display: "none" }}
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-              <Form.Label
-                htmlFor="img-selection"
-                className="btn btn-outline-primary"
-                style={{ width: "100%", padding: "6px" }}
-              >
-                Upload Image
-              </Form.Label>
-            </Form.Group>
+            <div className="mt-4">
+              <DragAndDropImg setImage={setImage} />
+            </div>
             <div className="d-flex justify-content-center align-items-center">
-              <Button type="submit" className="mt-4">
+              <Button type="submit" className="mt-4" disabled={loading}>
                 Register
               </Button>
             </div>

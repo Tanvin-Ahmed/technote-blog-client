@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import AddNewAdmin from "./components/admin/addNewAdmin/AddNewAdmin";
+import AddNewCategory from "./components/admin/manageCategory/AddNewCategory";
 import PendingblogsTable from "./components/admin/pendingBlogs/pendingBlogsTable/PendingblogsTable";
 import Footer from "./components/shared/footer/Footer";
 import Header from "./components/shared/header/Header";
@@ -63,8 +63,8 @@ const router = createBrowserRouter([
             element: <PendingblogsTable />,
           },
           {
-            path: "add-new-admin",
-            element: <AddNewAdmin />,
+            path: "manage-category",
+            element: <AddNewCategory />,
           },
         ],
       },

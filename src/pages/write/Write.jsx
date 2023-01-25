@@ -7,11 +7,9 @@ import { useSearchParams } from "react-router-dom";
 import { getSingleBlog, updateBlog, uploadBlog } from "../../apis/blog";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import DragAndDropImg from "../../components/shared/dragAndDrop/DragAndDropImg";
+import Loader from "../../components/shared/loader/Loader";
 import { compressImage } from "../../utils/handleImages/compressImage";
-import {
-  deleteImageFromImageBB,
-  uploadImageInImageBB,
-} from "../../utils/handleImages/uploadImage";
+import { uploadImageInImageBB } from "../../utils/handleImages/uploadImage";
 import "./write.scss";
 
 const categories = [
@@ -20,7 +18,7 @@ const categories = [
   "React.js",
   "Next.js",
   "Angular",
-  "Vue",
+  "Vuejs",
   "Node.js",
   "Express.js",
   "Database",
@@ -42,7 +40,7 @@ const Write = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [title, setTitle] = useState("");
   const [img, setImg] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState({});
 
   useEffect(() => {
@@ -84,7 +82,10 @@ const Write = () => {
     const { img: image, errorMessage: imgUploadError } =
       await uploadImageInImageBB(compressedImage, "user");
 
-    if (imgUploadError) return console.log(imgUploadError);
+    if (imgUploadError) {
+      console.log(imgUploadError);
+      return;
+    }
 
     const blogForm = {
       img: image,
@@ -106,10 +107,10 @@ const Write = () => {
   const handleUpdate = async () => {
     let updateBlogForm = {};
     if (img) {
-      const { message: deleteImgMessage, errorMessage: deleteImgError } =
-        await deleteImageFromImageBB(selectedBlog?.img?.delete_url);
+      // const { message: deleteImgMessage, errorMessage: deleteImgError } =
+      //   await deleteImageFromImageBB(selectedBlog?.img?.delete_url);
 
-      if (deleteImgError) return console.log(deleteImgError);
+      // if (deleteImgError) return console.log(deleteImgError);
 
       const { compressedImage, errorMessage: compressError } =
         await compressImage(img);
@@ -119,7 +120,10 @@ const Write = () => {
       const { img: image, errorMessage: imgUploadError } =
         await uploadImageInImageBB(compressedImage, "user");
 
-      if (imgUploadError) return console.log(imgUploadError);
+      if (imgUploadError) {
+        console.log(imgUploadError);
+        return;
+      }
 
       updateBlogForm = {
         img: image,
@@ -141,14 +145,17 @@ const Write = () => {
     else setUploadStatus({ message: errorMessage, status: "danger" });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setLoading(true);
+
     if (selectedBlog) {
-      handleUpdate();
+      await handleUpdate();
     } else {
-      handleCreate();
+      await handleCreate();
     }
+    setLoading(false);
   };
 
   return error ? (
@@ -191,15 +198,6 @@ const Write = () => {
                   placeholder="Write blog..."
                 />
               </div>
-              <div className="mt-4">
-                {uploadStatus?.status && (
-                  <CustomAlert
-                    variant={uploadStatus?.status}
-                    message={uploadStatus?.message}
-                    setState={setUploadStatus}
-                  />
-                )}
-              </div>
             </div>
           </Col>
           <Col md={"4"} sm={"12"}>
@@ -219,6 +217,19 @@ const Write = () => {
                 <Button className="btn-outline-info" size="sm" type="submit">
                   {selectedBlog ? "Update" : "Publish"}
                 </Button>
+              </div>
+              <div className="my-3 text-center">
+                {loading ? (
+                  <Loader />
+                ) : (
+                  uploadStatus?.status && (
+                    <CustomAlert
+                      variant={uploadStatus?.status}
+                      message={uploadStatus?.message}
+                      setState={setUploadStatus}
+                    />
+                  )
+                )}
               </div>
               <div className="item border-shadow p-3 category-container">
                 <h3>Category</h3>
