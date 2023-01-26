@@ -133,6 +133,13 @@ const Profile = () => {
 
   const handleDeleteBlog = async (id, status) => {
     const { message, errorMessage } = await deleteBlog(id);
+    if (message) {
+      if (status === "approved") {
+        setMyBlogs((prev) => prev.filter((b) => b.id !== id));
+      } else {
+        setMyPendingBlogs((prev) => prev.filter((b) => b.id !== id));
+      }
+    }
     if (errorMessage) {
       alert(errorMessage);
     }
