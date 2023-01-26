@@ -6,8 +6,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { approveBlog, deleteBlog, getAllBlogs } from "../../../../apis/blog";
+import {
+  approveBlog,
+  deleteBlog,
+  getAllBlogs,
+  getTotalBlogCount,
+} from "../../../../apis/blog";
 import { getSubString } from "../../../../utils/getSubString";
+import { pageCounter } from "../../../../utils/pageCounter";
 import { textToHtml } from "../../../../utils/textToHtml";
 import { blogContext } from "../../../context/BlogContext";
 import CustomAlert from "../../../shared/customAlert/CustomAlert";
@@ -25,6 +31,8 @@ const PendingblogsTable = () => {
     setPendingBlogsCurrentPage,
     rowsPerPage,
     pendingBlogPageTracker,
+    setApprovedBlogsTotalPage,
+    setPendingBlogsTotalPage,
   } = useContext(blogContext);
 
   const [loading, setLoading] = useState(false);
@@ -51,13 +59,19 @@ const PendingblogsTable = () => {
       status: "approved",
     });
 
-    setUpdateLoading(false);
     if (message) {
+      const { count: approveCount } = await getTotalBlogCount("approved");
+      const { count: pendingCount } = await getTotalBlogCount("pending");
+
+      setApprovedBlogsTotalPage(pageCounter(approveCount, rowsPerPage));
+      setPendingBlogsTotalPage(pageCounter(pendingCount, rowsPerPage));
+
       setPendingBlogs((prev) => prev.filter((b) => b.id !== blog.id));
       setUpdateStatus({ message, status: "success" });
     } else {
       setUpdateStatus({ message: errorMessage, status: "danger" });
     }
+    setUpdateLoading(false);
   };
 
   const handleRemove = async (id) => {
@@ -65,13 +79,16 @@ const PendingblogsTable = () => {
 
     const { message, errorMessage } = await deleteBlog(id);
 
-    setUpdateLoading(false);
     if (message) {
+      const { count } = await getTotalBlogCount("pending");
+      setPendingBlogsTotalPage(pageCounter(count, rowsPerPage));
+
       setPendingBlogs((prev) => prev.filter((b) => b.id !== id));
       setUpdateStatus({ message, status: "success" });
     } else {
       setUpdateStatus({ message: errorMessage, status: "danger" });
     }
+    setUpdateLoading(false);
   };
 
   useEffect(() => {
