@@ -7,13 +7,13 @@ const Paginate = ({ pages, page, route, setPage }) => {
   const handleClicFirst = () => {
     // set page = 1
     setPage(0);
-    navigate(`${route}/0`);
+    if (route) navigate(`${route}/0`);
   };
 
   const handleClickPrevious = () => {
     // decrease page number by 1 in every click
     setPage((prev) => {
-      navigate(`${route}/${prev - 1}`);
+      if (route) navigate(`${route}/${prev - 1}`);
       return prev - 1;
     });
   };
@@ -21,7 +21,7 @@ const Paginate = ({ pages, page, route, setPage }) => {
   const handleClickNext = () => {
     // increase page by one in every click
     setPage((prev) => {
-      navigate(`${route}/${prev + 1}`);
+      if (route) navigate(`${route}/${prev + 1}`);
       return prev + 1;
     });
   };
@@ -29,7 +29,7 @@ const Paginate = ({ pages, page, route, setPage }) => {
   const handleClickLast = () => {
     // set page = pages
     setPage(pages - 1);
-    navigate(`${route}/${pages - 1}`);
+    if (route) navigate(`${route}/${pages - 1}`);
   };
 
   return pages > 1 ? (

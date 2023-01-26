@@ -55,6 +55,24 @@ export const getTotalBlogCount = async (status) => {
   }
 };
 
+export const getTotalBlogCountByCategory = async (category) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `/post/get-count-by-category/${category}`
+    );
+
+    return {
+      count: data.count,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      count: 0,
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
 export const getSingleBlog = async (id) => {
   try {
     const { data } = await axiosInstance.get(`/post/single/${id}`);

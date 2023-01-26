@@ -1,19 +1,52 @@
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState, useTransition } from "react";
 import { Button, Card, Form, InputGroup, Table } from "react-bootstrap";
-import { deleteCategory, updateCategory } from "../../../apis/categories";
+import { getTotalBlogCountByCategory } from "../../../apis/blog";
+import {
+  deleteCategory,
+  getCategories,
+  getCategoriesBySearch,
+  getCategoryCount,
+  updateCategory,
+} from "../../../apis/categories";
+import { pageCounter } from "../../../utils/pageCounter";
 import { blogContext } from "../../context/BlogContext";
 import CustomAlert from "../../shared/customAlert/CustomAlert";
 import Loader from "../../shared/loader/Loader";
+import Paginate from "../../shared/paginate/Paginate";
 
 const DeleteCategory = () => {
-  const { categories, setCategories } = useContext(blogContext);
+  const {
+    categories,
+    setCategories,
+    categoryCurrentPage,
+    setCategoryCurrentPage,
+    totalCategoryPage,
+    setTotalCategoryPage,
+    rowsPerPage,
+    categoryPageTracker,
+  } = useContext(blogContext);
+  const [isPending, startTransition] = useTransition();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryName, setCategoryName] = useState("");
+  const [foundCategories, setFoundCategories] = useState([]);
 
   const [apiStatus, setApiStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (categoryPageTracker.current < categoryCurrentPage) {
+      getCategories(rowsPerPage, categoryCurrentPage * rowsPerPage).then(
+        (data) => {
+          if (data.categories.length) {
+            setCategories((prev) => [...prev, ...data.categories]);
+          }
+        }
+      );
+      categoryPageTracker.current++;
+    }
+  }, [rowsPerPage, setCategories, categoryCurrentPage, categoryPageTracker]);
 
   const handleSelectCategory = (info) => {
     setSelectedCategory(info);
@@ -25,10 +58,39 @@ const DeleteCategory = () => {
 
   const handleSearch = (e) => {
     setCategoryName(e.target.value);
+
+    startTransition(() => {
+      getCategoriesBySearch(e.target.value).then((data) => {
+        if (data.categories.length) {
+          setFoundCategories(data.categories);
+        } else {
+          setFoundCategories([]);
+        }
+      });
+    });
   };
 
   const handleDelete = async (id) => {
     setLoading(true);
+
+    const { count, errorMessage: error } = await getTotalBlogCountByCategory(
+      id
+    );
+
+    if (error) {
+      setLoading(false);
+      return alert(error);
+    } else {
+      if (count > 0) {
+        setLoading(false);
+        setApiStatus({
+          message: `There are ${count} blogs already in the category! You should update the category name rather than delete.`,
+          status: "info",
+        });
+        return;
+      }
+    }
+
     const { message, errorMessage } = await deleteCategory(id);
     if (message) {
       setApiStatus({ message, status: "success" });
@@ -37,6 +99,9 @@ const DeleteCategory = () => {
       if (selectedCategory.id === id) {
         setSelectedCategory(null);
       }
+
+      const { count } = await getCategoryCount();
+      setTotalCategoryPage(pageCounter(count / rowsPerPage));
     } else {
       setApiStatus({ message: errorMessage, status: "danger" });
     }
@@ -93,11 +158,7 @@ const DeleteCategory = () => {
             <Button type="submit" className="btn-outline-warning">
               Update
             </Button>
-          ) : (
-            <Button type="submit" className="btn-outline-primary">
-              Search
-            </Button>
-          )}
+          ) : null}
         </InputGroup>
       </Form>
 
@@ -133,8 +194,12 @@ const DeleteCategory = () => {
             </tr>
           </thead>
           <tbody>
-            {!!categories.length &&
-              categories.map((category) => (
+            {(foundCategories.length > 0 ? foundCategories : categories)
+              .slice(
+                categoryCurrentPage * rowsPerPage,
+                categoryCurrentPage * rowsPerPage + rowsPerPage
+              )
+              .map((category) => (
                 <tr key={category?.id} className="text-center">
                   <td>{category?.id}</td>
                   <td>{category?.category_name}</td>
@@ -160,6 +225,15 @@ const DeleteCategory = () => {
               ))}
           </tbody>
         </Table>
+        {!foundCategories.length && (
+          <div className="mt-3">
+            <Paginate
+              pages={totalCategoryPage}
+              page={categoryCurrentPage + 1}
+              setPage={setCategoryCurrentPage}
+            />
+          </div>
+        )}
       </Card>
     </div>
   );

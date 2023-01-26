@@ -1,8 +1,10 @@
 import { axiosInstance } from "./axiosInstance";
 
-export const getCategories = async () => {
+export const getCategories = async (limit, offset) => {
   try {
-    const { data } = await axiosInstance.get(`/categories`);
+    const { data } = await axiosInstance.get(
+      `/categories?limit=${limit}&offset=${offset}`
+    );
     return {
       categories: data || [],
       errorMessage: null,
@@ -26,6 +28,22 @@ export const getCategoriesBySearch = async (search = "") => {
     return {
       categories: [],
       errorMessage: "Categories not found",
+    };
+  }
+};
+
+export const getCategoryCount = async () => {
+  try {
+    const { data } = await axiosInstance.get("/categories/total-count");
+
+    return {
+      count: data.count,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      count: 0,
+      errorMessage: error.response.data.message || error.message,
     };
   }
 };
