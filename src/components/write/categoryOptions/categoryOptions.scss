@@ -1,0 +1,13 @@
+.category-container {
+  height: 400px;
+  overflow: hidden;
+
+  hr {
+    border: 1px solid #485785;
+  }
+
+  .categories {
+    height: 65%;
+    overflow-y: auto;
+  }
+}

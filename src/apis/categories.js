@@ -12,7 +12,7 @@ export const getCategories = async (limit, offset) => {
   } catch (error) {
     return {
       categories: [],
-      errorMessage: "Categories not found",
+      errorMessage: error.response.data.message || error.message,
     };
   }
 };

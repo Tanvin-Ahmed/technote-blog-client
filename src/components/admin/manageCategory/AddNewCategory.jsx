@@ -8,7 +8,7 @@ import {
 } from "../../../apis/categories";
 import { blogContext } from "../../context/BlogContext";
 import CustomAlert from "../../shared/customAlert/CustomAlert";
-import DeleteCategory from "./DeleteCategory";
+import DeleteOrUpdateCategory from "./DeleteOrUpdateCategory";
 
 const AddNewCategory = () => {
   const { setCategories } = useContext(blogContext);
@@ -106,7 +106,7 @@ const AddNewCategory = () => {
         </div>
       </div>
       <div className="mt-5">
-        <DeleteCategory />
+        <DeleteOrUpdateCategory />
       </div>
     </section>
   );

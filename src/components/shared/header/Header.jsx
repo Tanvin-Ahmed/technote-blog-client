@@ -81,7 +81,10 @@ const Header = () => {
                 <NavDropdown title={userInfo?.username} id="profile-dropdown">
                   <NavDropdown.Item>
                     <Nav.Link>
-                      <Link to={"/profile"} style={{ textDecoration: "none" }}>
+                      <Link
+                        to={"/user/profile"}
+                        style={{ textDecoration: "none" }}
+                      >
                         Profile
                       </Link>
                     </Nav.Link>

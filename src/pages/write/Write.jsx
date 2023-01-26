@@ -8,6 +8,7 @@ import { getSingleBlog, updateBlog, uploadBlog } from "../../apis/blog";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import DragAndDropImg from "../../components/shared/dragAndDrop/DragAndDropImg";
 import Loader from "../../components/shared/loader/Loader";
+import CategoryOptions from "../../components/write/categoryOptions/CategoryOptions";
 import { compressImage } from "../../utils/handleImages/compressImage";
 import { uploadImageInImageBB } from "../../utils/handleImages/uploadImage";
 import "./write.scss";
@@ -58,15 +59,11 @@ const Write = () => {
       setSelectedBlog(blogData);
       setText(blogData.description);
       setTitle(blogData.title);
-      setSelectedCategory(blog.category);
+      setSelectedCategory(blog.categoryId);
     };
 
     get();
   }, [searchParams]);
-
-  const handleSelectCategory = (e) => {
-    setSelectedCategory(e.target.value);
-  };
 
   const handleCreate = async () => {
     if (!img) {
@@ -90,7 +87,6 @@ const Write = () => {
     const blogForm = {
       img: image,
       title,
-      selectedCategory,
       description: text,
       createAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
       updateAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
@@ -133,7 +129,6 @@ const Write = () => {
     updateBlogForm = {
       ...updateBlogForm,
       title,
-      selectedCategory,
       description: text,
       updateAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
       status: "pending",
@@ -231,23 +226,10 @@ const Write = () => {
                   )
                 )}
               </div>
-              <div className="item border-shadow p-3 category-container">
-                <h3>Category</h3>
-                <Form.Control type="text" placeholder="Search Category" />
-                <hr />
-                <div className="categories">
-                  {categories.map((category, index) => (
-                    <Form.Check
-                      key={index}
-                      type={"radio"}
-                      value={category}
-                      label={category}
-                      checked={selectedCategory === category}
-                      onChange={handleSelectCategory}
-                    />
-                  ))}
-                </div>
-              </div>
+              <CategoryOptions
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+              />
             </div>
           </Col>
         </Row>

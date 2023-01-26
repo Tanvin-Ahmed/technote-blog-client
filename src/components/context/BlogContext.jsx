@@ -23,6 +23,9 @@ const BlogContext = ({ children }) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const getCategoryRef = useRef(false);
+  const getCoutRef = useRef(false);
+
   useEffect(() => {
     const get = async () => {
       const { count: approveCount } = await getTotalBlogCount("approved");
@@ -33,13 +36,24 @@ const BlogContext = ({ children }) => {
       setPendingBlogsTotalPage(pageCounter(pendingCount, rowsPerPage));
       setTotalCategoryPage(pageCounter(categoryCount, rowsPerPage));
     };
-    get();
+    if (getCoutRef.current) get();
+
+    return () => {
+      getCoutRef.current = true;
+    };
   }, [rowsPerPage]);
 
   useEffect(() => {
-    getCategories(rowsPerPage, 0).then((data) => {
-      setCategories(data.categories);
-    });
+    if (getCategoryRef.current) {
+      getCategories(rowsPerPage, 0).then((data) => {
+        setCategories(data.categories);
+        setCategoryCurrentPage((prev) => prev + 1);
+      });
+    }
+
+    return () => {
+      getCategoryRef.current = true;
+    };
   }, [rowsPerPage]);
 
   const values = {

@@ -10,6 +10,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Home from "./pages/home/Home";
 import Single from "./pages/single/Single";
+import Profile from "./pages/user/Profile";
 import Write from "./pages/write/Write";
 
 const Layout = () => {
@@ -28,6 +29,15 @@ const AdminPanel = () => {
   return (
     <section className="section-height">
       <Admin />
+      <Outlet />
+    </section>
+  );
+};
+
+const UserPanel = () => {
+  return (
+    <section className="section-height">
+      <h3 className="text-center my-3">User Panel</h3>
       <Outlet />
     </section>
   );
@@ -56,7 +66,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/admin",
-        element: <AdminPanel />,
+        element: (
+          <PrivateRoute>
+            <AdminPanel />
+          </PrivateRoute>
+        ),
         children: [
           {
             path: "pending-blogs/:pageNumber",
@@ -65,6 +79,20 @@ const router = createBrowserRouter([
           {
             path: "manage-category",
             element: <AddNewCategory />,
+          },
+        ],
+      },
+      {
+        path: "/user",
+        element: (
+          <PrivateRoute>
+            <UserPanel />
+          </PrivateRoute>
+        ),
+        children: [
+          {
+            path: "profile",
+            element: <Profile />,
           },
         ],
       },

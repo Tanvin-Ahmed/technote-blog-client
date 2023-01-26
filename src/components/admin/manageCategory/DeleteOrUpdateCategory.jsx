@@ -16,7 +16,7 @@ import CustomAlert from "../../shared/customAlert/CustomAlert";
 import Loader from "../../shared/loader/Loader";
 import Paginate from "../../shared/paginate/Paginate";
 
-const DeleteCategory = () => {
+const DeleteOrUpdateCategory = () => {
   const {
     categories,
     setCategories,
@@ -239,4 +239,4 @@ const DeleteCategory = () => {
   );
 };
 
-export default DeleteCategory;
+export default DeleteOrUpdateCategory;

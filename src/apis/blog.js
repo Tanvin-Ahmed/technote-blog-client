@@ -73,6 +73,42 @@ export const getTotalBlogCountByCategory = async (category) => {
   }
 };
 
+export const getMyBlogsCount = async (status) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `post/get-posts-count-by-user?status=${status}`
+    );
+
+    return {
+      count: data.count || 0,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      count: 0,
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
+export const getMyBlogs = async (status, limit, offset) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `post/get-posts-by-user?status=${status}&limit=${limit}&offset=${offset}`
+    );
+
+    return {
+      blogs: data || [],
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      blogs: [],
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
 export const getSingleBlog = async (id) => {
   try {
     const { data } = await axiosInstance.get(`/post/single/${id}`);
