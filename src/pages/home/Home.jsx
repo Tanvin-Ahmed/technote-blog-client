@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getAllBlogs } from "../../apis/blog";
 import { blogContext } from "../../components/context/BlogContext";
+import SearchBox from "../../components/home/searchBox/SearchBox";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import Loader from "../../components/shared/loader/Loader";
 import TimeStamp from "../../components/shared/timeStapm/TimeStamp";
@@ -12,7 +13,6 @@ import "./home.scss";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   const {
     rowsPerPage,
@@ -22,6 +22,8 @@ const Home = () => {
     approvedBlogsCurrentPage,
     setApprovedBlogsCurrentPage,
     blogPageTracker,
+    searchTerm,
+    searchArea,
   } = useContext(blogContext);
 
   const [error, setError] = useState(null);
@@ -31,14 +33,41 @@ const Home = () => {
     navigate(`/post/${id}`);
   };
 
+  const searchBlogs = async () => {
+    setLoading(true);
+    const { blogs, errorMessage } = await getAllBlogs(
+      typeof searchTerm === "object" ? searchTerm.id : "",
+      "approved",
+      rowsPerPage,
+      0,
+      typeof searchTerm === "string" ? searchTerm : ""
+    );
+
+    if (blogs.length) {
+      const blogsData = blogs.map((blog) => ({
+        ...blog,
+        img: JSON.parse(blog.img),
+      }));
+      setApprovedBlogs(blogsData);
+    } else {
+      setApprovedBlogs([]);
+    }
+    setError(errorMessage);
+    setLoading(false);
+
+    setApprovedBlogsCurrentPage(1);
+    blogPageTracker.current = 1;
+  };
+
   useEffect(() => {
-    const get = async (cat = "") => {
+    const get = async () => {
       setLoading(true);
       const { blogs, errorMessage } = await getAllBlogs(
-        cat,
+        "",
         "approved",
         rowsPerPage,
-        approvedBlogsCurrentPage * rowsPerPage
+        approvedBlogsCurrentPage * rowsPerPage,
+        ""
       );
       if (blogs.length) {
         const blogsData = blogs.map((blog) => ({
@@ -51,21 +80,18 @@ const Home = () => {
       setLoading(false);
     };
     if (blogPageTracker.current === -1) {
-      if (searchParams.get("cat")) {
-        get(searchParams.get("cat"));
-      } else {
-        get();
-      }
+      get();
       setApprovedBlogsCurrentPage(1);
       blogPageTracker.current++;
     }
   }, [
-    searchParams,
     approvedBlogsCurrentPage,
     rowsPerPage,
     setApprovedBlogs,
     blogPageTracker,
     setApprovedBlogsCurrentPage,
+    searchTerm,
+    searchArea,
   ]);
 
   const loadMore = async () => {
@@ -74,10 +100,11 @@ const Home = () => {
 
       setLoading(true);
       const { blogs, errorMessage } = await getAllBlogs(
-        searchParams.get("cat") || "",
+        searchArea === "category" ? searchTerm.id : "",
         "approved",
         rowsPerPage,
-        approvedBlogsCurrentPage * rowsPerPage
+        approvedBlogsCurrentPage * rowsPerPage,
+        typeof searchTerm === "string" ? searchTerm : ""
       );
       if (blogs.length) {
         const blogsData = blogs.map((blog) => ({
@@ -94,6 +121,7 @@ const Home = () => {
   return (
     <section className="section-height home">
       <div className="posts mt-4">
+        <SearchBox searchBlogs={searchBlogs} />
         {error ? (
           <CustomAlert message={error} variant={"warning"} />
         ) : (

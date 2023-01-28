@@ -32,50 +32,6 @@ const Header = () => {
                 Home
               </Link>
             </Nav.Link>
-            <NavDropdown title="Category" id="basic-nav-dropdown">
-              <NavDropdown.Item>
-                <Link
-                  to="/?cat=web-development"
-                  style={{ textDecoration: "none" }}
-                >
-                  Web Development
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link
-                  to="/?cat=app-development"
-                  style={{ textDecoration: "none" }}
-                >
-                  App Development
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link
-                  to="/?cat=comperirive-programming"
-                  style={{ textDecoration: "none" }}
-                >
-                  Competitive Programming
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link to="/?cat=it" style={{ textDecoration: "none" }}>
-                  IT
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link
-                  to="/?cat=computer-science"
-                  style={{ textDecoration: "none" }}
-                >
-                  Computer Science
-                </Link>
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link to="/?cat=electronics" style={{ textDecoration: "none" }}>
-                  Electronics
-                </Link>
-              </NavDropdown.Item>
-            </NavDropdown>
             {!!Object.keys(userInfo).length ? (
               <>
                 <NavDropdown title={userInfo?.username} id="profile-dropdown">

@@ -20,11 +20,12 @@ export const getAllBlogs = async (
   category = "",
   status = "approved",
   limit,
-  offset
+  offset,
+  search = ""
 ) => {
   try {
     const { data } = await axiosInstance.get(
-      `/post?cat=${category}&status=${status}&limit=${limit}&offset=${offset}`
+      `/post?cat=${category}&status=${status}&limit=${limit}&offset=${offset}&search=${search}`
     );
 
     return {

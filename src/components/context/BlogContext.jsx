@@ -26,6 +26,10 @@ const BlogContext = ({ children }) => {
   const getCategoryRef = useRef(false);
   const getCoutRef = useRef(false);
 
+  // for home page
+  const [searchTerm, setSearchTerm] = useState(null);
+  const [searchArea, setSearchArea] = useState("general");
+
   useEffect(() => {
     const get = async () => {
       const { count: approveCount } = await getTotalBlogCount("approved");
@@ -80,6 +84,10 @@ const BlogContext = ({ children }) => {
     categoryCurrentPage,
     setCategoryCurrentPage,
     categoryPageTracker,
+    searchTerm,
+    setSearchTerm,
+    searchArea,
+    setSearchArea,
   };
 
   return <blogContext.Provider value={values}>{children}</blogContext.Provider>;
