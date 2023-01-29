@@ -8,6 +8,8 @@ import { userContext } from "../../components/context/UserContext";
 import Avatar from "../../components/shared/avatar/Avatar";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
 import TimeStamp from "../../components/shared/timeStapm/TimeStamp";
+import Comment from "../../components/single/Comment";
+import CommentForm from "../../components/single/CommentForm";
 import Menu from "../../components/single/Menu";
 import "./single.scss";
 
@@ -111,6 +113,13 @@ const Single = () => {
                 className="w-100"
                 dangerouslySetInnerHTML={{ __html: blogData.description }}
               ></div>
+            </div>
+            <div className="mt-4">
+              <CommentForm />
+              <h3>Comments</h3>
+              <Comment />
+              <Comment />
+              <Comment />
             </div>
           </Col>
           <Col md={"4"} sm={"12"}>
