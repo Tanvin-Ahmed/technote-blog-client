@@ -5,6 +5,7 @@ import TimeStamp from "../shared/timeStapm/TimeStamp";
 
 const Comment = () => {
   const [cursor, setCursor] = useState(false);
+  const [content, setContent] = useState("");
 
   const handleDoubleClick = () => {
     setCursor(true);
@@ -12,6 +13,10 @@ const Comment = () => {
 
   const handleBlur = () => {
     setCursor(false);
+  };
+
+  const handleInput = (e) => {
+    setContent(e.target.innerHTML);
   };
 
   return (
@@ -35,6 +40,7 @@ const Comment = () => {
             contentEditable={cursor}
             onDoubleClick={handleDoubleClick}
             onBlur={handleBlur}
+            onInput={handleInput}
           >
             Lorem, ipsum dolor sit amet consectetur adipisicing elit.
             Reiciendis, impedit delectus consequuntur amet quaerat ducimus harum
