@@ -1,70 +1,157 @@
-import React, { useState } from "react";
-import { Card, Col, Row } from "react-bootstrap";
+import {
+  faCircleCheck,
+  faEdit,
+  faTimesCircle,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useContext, useEffect, useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { deleteComment, updateComment } from "../../apis/comment";
+import { userContext } from "../context/UserContext";
 import Avatar from "../shared/avatar/Avatar";
+import CustomAlert from "../shared/customAlert/CustomAlert";
+import Loader from "../shared/loader/Loader";
 import TimeStamp from "../shared/timeStapm/TimeStamp";
 
-const Comment = () => {
+const Comment = ({ comment, setComments }) => {
+  const { userInfo } = useContext(userContext);
   const [cursor, setCursor] = useState(false);
   const [content, setContent] = useState("");
+  const [updatedContent, setUpdatedContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleDoubleClick = () => {
-    setCursor(true);
+  useEffect(() => {
+    setContent(comment?.message);
+  }, [comment?.message]);
+
+  const handleEditEnable = () => {
+    if (userInfo.id === comment.authorId) setCursor((prev) => !prev);
   };
 
-  const handleBlur = () => {
-    setCursor(false);
+  const handleCencle = () => {
+    handleEditEnable();
+    if (!updatedContent.trim()) return;
+    setContent("Loading...");
+    setTimeout(() => {
+      setContent(comment.message);
+    }, 10);
+  };
+
+  const handleDeleteComment = () => {
+    setLoading(true);
+    deleteComment(comment.id, userInfo.id, comment.admins_id).then((data) => {
+      if (data.errorMessage) {
+        setError({ message: data.errorMessage, status: "danger" });
+      } else {
+        setComments((prev) => prev.filter((c) => c.id !== comment.id));
+      }
+      setLoading(false);
+    });
   };
 
   const handleInput = (e) => {
-    setContent(e.target.innerHTML);
+    setUpdatedContent(e.target.innerHTML);
+  };
+
+  const handleUpdate = () => {
+    updateComment({ id: comment.id, message: updatedContent }).then((data) => {
+      if (data.errorMessage) {
+        setError({ message: data.errorMessage, status: "danger" });
+      } else {
+        setComments((prev) => {
+          const index = prev.findIndex((c) => c.id === data.comment.id);
+          if (index !== -1) prev[index] = data.comment;
+          return prev;
+        });
+        handleEditEnable();
+      }
+    });
   };
 
   return (
-    <Card className="border-shadow p-3 my-3">
+    <Card
+      className="border-shadow p-3 my-3"
+      style={userInfo?.id ? { backgroundColor: "rgba(0, 173, 255, 0.15)" } : {}}
+    >
       <Row>
         <Col sm={2}>
-          <div className="d-flex justify-content-center align-items-center flex-column">
-            <Avatar
-              src={
-                "https://manofmany.com/wp-content/uploads/2019/04/David-Gandy.jpg"
-              }
-              alt=""
-            />
-            <h6>
-              <strong>user name</strong>
+          <div className="w-100 d-flex justify-content-center align-items-center flex-column">
+            <Avatar src={comment?.authorImg?.display_url} alt="" />
+            <h6 className="mt-2">
+              <strong>{comment?.authorName}</strong>
             </h6>
+            <div className="w-100 mt-2 d-flex justify-content-around align-items-center">
+              {cursor ? (
+                <>
+                  <Button
+                    className="btn-outline-success"
+                    size="sm"
+                    onClick={handleUpdate}
+                  >
+                    <FontAwesomeIcon icon={faCircleCheck} />
+                  </Button>
+                  <Button
+                    className="btn-outline-warning"
+                    size="sm"
+                    onClick={handleCencle}
+                  >
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  className="btn-outline-info"
+                  size="sm"
+                  onClick={handleEditEnable}
+                >
+                  <FontAwesomeIcon icon={faEdit} />
+                </Button>
+              )}
+              <Button
+                className="btn-outline-danger"
+                size="sm"
+                onClick={handleDeleteComment}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </Button>
+            </div>
+            {loading && (
+              <div className="mt-3 w-100 d-flex justify-content-center align-items-center">
+                <Loader size="sm" />
+              </div>
+            )}
           </div>
         </Col>
         <Col sm={10}>
           <Card.Text
+            suppressContentEditableWarning
             contentEditable={cursor}
-            onDoubleClick={handleDoubleClick}
-            onBlur={handleBlur}
             onInput={handleInput}
-          >
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-            Reiciendis, impedit delectus consequuntur amet quaerat ducimus harum
-            vel optio sit. Aut est laborum tempora cumque nostrum pariatur
-            accusantium doloremque sint consequuntur? Consequatur quam commodi
-            expedita alias maiores velit delectus. Consequatur nobis excepturi
-            vel voluptate enim quos blanditiis error fugit aspernatur quod
-            doloremque nesciunt fuga, temporibus dolor quisquam ipsam? Labore
-            dolorem rerum odit alias mollitia velit repellendus. Quae
-            repellendus animi corporis omnis quas. Facere, veniam! Laudantium
-            ducimus adipisci ea delectus in asperiores officia itaque dolore,
-            architecto sint voluptates cupiditate inventore consequuntur
-            explicabo commodi rem deserunt aliquam eius hic, dolores amet
-            dolorum similique.
-          </Card.Text>
+            dangerouslySetInnerHTML={{ __html: content }}
+          ></Card.Text>
           <div className="mt-4">
             <small>
               <strong>
-                <TimeStamp createAt={new Date()} updateAt={new Date()} />
+                <TimeStamp
+                  createAt={comment?.createdAt}
+                  updateAt={comment?.updatedAt}
+                />
               </strong>
             </small>
           </div>
         </Col>
       </Row>
+      {error && (
+        <div className="mt-2">
+          <CustomAlert
+            variant={error.status}
+            message={error.message}
+            setState={setError}
+          />
+        </div>
+      )}
     </Card>
   );
 };

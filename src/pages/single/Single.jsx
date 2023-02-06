@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteBlog, getSingleBlog } from "../../apis/blog";
+import { getCommentCount, getCommentsByBlogId } from "../../apis/comment";
 import { userContext } from "../../components/context/UserContext";
 import Avatar from "../../components/shared/avatar/Avatar";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
@@ -11,6 +12,7 @@ import TimeStamp from "../../components/shared/timeStapm/TimeStamp";
 import Comment from "../../components/single/Comment";
 import CommentForm from "../../components/single/CommentForm";
 import Menu from "../../components/single/Menu";
+import { pageCounter } from "../../utils/pageCounter";
 import "./single.scss";
 
 const Single = () => {
@@ -21,9 +23,22 @@ const Single = () => {
   const [error, setError] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
 
+  const [comments, setComments] = useState([]);
+  const [totalCommentsPage, setTotalCommentsPage] = useState(0);
+  const [commentsCurrentPage, setCommentsCurrentPage] = useState(0);
+  const [rowsPerPage] = useState(10);
+
   const handleRoute = () => {
     navigate(`/write?edit=${id}`);
   };
+
+  useEffect(() => {
+    if (!id) return;
+
+    getCommentCount(id).then((data) => {
+      setTotalCommentsPage(pageCounter(data.count, rowsPerPage));
+    });
+  }, [id, rowsPerPage]);
 
   useEffect(() => {
     const get = async (blogId) => {
@@ -40,6 +55,28 @@ const Single = () => {
       get(id);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (!totalCommentsPage) return;
+
+    getCommentsByBlogId(
+      id,
+      rowsPerPage,
+      rowsPerPage * commentsCurrentPage
+    ).then((data) => {
+      const commentsInfo = data.comments.map((c) => ({
+        ...c,
+        authorImg: JSON.parse(c.authorImg),
+      }));
+      if (!data.errorMessage) {
+        setComments((prev) => [...commentsInfo, ...prev]);
+      }
+    });
+  }, [id, rowsPerPage, commentsCurrentPage, totalCommentsPage]);
+
+  const handleNextPage = () => {
+    setCommentsCurrentPage((prev) => prev + 1);
+  };
 
   const handleDelete = async () => {
     const { message, errorMessage } = await deleteBlog(id);
@@ -115,11 +152,37 @@ const Single = () => {
               ></div>
             </div>
             <div className="mt-4">
-              <CommentForm />
+              {userInfo.id ? (
+                <CommentForm
+                  blogId={blogData.id}
+                  setComments={setComments}
+                  setPageCount={setTotalCommentsPage}
+                />
+              ) : null}
               <h3>Comments</h3>
-              <Comment />
-              <Comment />
-              <Comment />
+              {totalCommentsPage === 0 ? (
+                <CustomAlert message={"No comment yet!"} variant={"info"} />
+              ) : (
+                <>
+                  {comments?.map((comment) => (
+                    <Comment
+                      key={comment.id}
+                      comment={comment}
+                      setComments={setComments}
+                    />
+                  ))}
+                  {commentsCurrentPage < totalCommentsPage - 1 ? (
+                    <div className="mt-2">
+                      <Button
+                        className={"btn btn-info"}
+                        onClick={handleNextPage}
+                      >
+                        More Comment...
+                      </Button>
+                    </div>
+                  ) : null}
+                </>
+              )}
             </div>
           </Col>
           <Col md={"4"} sm={"12"}>
