@@ -73,7 +73,11 @@ const Comment = ({ comment, setComments }) => {
   return (
     <Card
       className="border-shadow p-3 my-3"
-      style={userInfo?.id ? { backgroundColor: "rgba(0, 173, 255, 0.15)" } : {}}
+      style={
+        userInfo?.id === comment.authorId
+          ? { backgroundColor: "rgba(0, 173, 255, 0.15)" }
+          : {}
+      }
     >
       <Row>
         <Col sm={2}>
@@ -82,41 +86,43 @@ const Comment = ({ comment, setComments }) => {
             <h6 className="mt-2">
               <strong>{comment?.authorName}</strong>
             </h6>
-            <div className="w-100 mt-2 d-flex justify-content-around align-items-center">
-              {cursor ? (
-                <>
+            {userInfo?.id === comment.authorId && (
+              <div className="w-100 mt-2 d-flex justify-content-around align-items-center">
+                {cursor ? (
+                  <>
+                    <Button
+                      className="btn-outline-success"
+                      size="sm"
+                      onClick={handleUpdate}
+                    >
+                      <FontAwesomeIcon icon={faCircleCheck} />
+                    </Button>
+                    <Button
+                      className="btn-outline-warning"
+                      size="sm"
+                      onClick={handleCencle}
+                    >
+                      <FontAwesomeIcon icon={faTimesCircle} />
+                    </Button>
+                  </>
+                ) : (
                   <Button
-                    className="btn-outline-success"
+                    className="btn-outline-info"
                     size="sm"
-                    onClick={handleUpdate}
+                    onClick={handleEditEnable}
                   >
-                    <FontAwesomeIcon icon={faCircleCheck} />
+                    <FontAwesomeIcon icon={faEdit} />
                   </Button>
-                  <Button
-                    className="btn-outline-warning"
-                    size="sm"
-                    onClick={handleCencle}
-                  >
-                    <FontAwesomeIcon icon={faTimesCircle} />
-                  </Button>
-                </>
-              ) : (
+                )}
                 <Button
-                  className="btn-outline-info"
+                  className="btn-outline-danger"
                   size="sm"
-                  onClick={handleEditEnable}
+                  onClick={handleDeleteComment}
                 >
-                  <FontAwesomeIcon icon={faEdit} />
+                  <FontAwesomeIcon icon={faTrash} />
                 </Button>
-              )}
-              <Button
-                className="btn-outline-danger"
-                size="sm"
-                onClick={handleDeleteComment}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </Button>
-            </div>
+              </div>
+            )}
             {loading && (
               <div className="mt-3 w-100 d-flex justify-content-center align-items-center">
                 <Loader size="sm" />
