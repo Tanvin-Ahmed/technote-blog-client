@@ -48,6 +48,7 @@ const DeleteOrUpdateCategory = () => {
     }
   }, [rowsPerPage, setCategories, categoryCurrentPage, categoryPageTracker]);
 
+
   const handleSelectCategory = (info) => {
     setSelectedCategory(info);
   };
@@ -138,7 +139,7 @@ const DeleteOrUpdateCategory = () => {
   };
 
   return (
-    <div className="w-100 d-flex justify-conetent-center align-items-center flex-column p-3 rounded border-shadow">
+    <div className="w-100 d-flex justify-content-center align-items-center flex-column p-3 rounded border-shadow">
       <h3>Update or Delete Category</h3>
 
       <Form className="w-100" onSubmit={handleSubmit}>

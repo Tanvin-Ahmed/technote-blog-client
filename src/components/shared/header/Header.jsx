@@ -1,6 +1,6 @@
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { removeDataFromLS } from "../../../utils/localStorage";
@@ -39,7 +39,11 @@ const Header = () => {
                     <Nav.Link>
                       <Link
                         to={"/user/profile"}
-                        style={{ textDecoration: "none" }}
+                        style={{
+                          textDecoration: "none",
+                          width: "100%",
+                          height: "100%",
+                        }}
                       >
                         Profile
                       </Link>
@@ -52,7 +56,14 @@ const Header = () => {
               </>
             ) : (
               <Nav.Link>
-                <Link to={"/login"} style={{ textDecoration: "none" }}>
+                <Link
+                  to={"/login"}
+                  style={{
+                    textDecoration: "none",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                >
                   Login
                 </Link>
               </Nav.Link>

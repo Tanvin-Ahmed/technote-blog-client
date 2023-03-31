@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const Paginate = ({ pages, page, route, setPage }) => {
   const navigate = useNavigate();
-  const handleClicFirst = () => {
+  const handleClickFirst = () => {
     // set page = 1
     setPage(0);
     if (route) navigate(`${route}/0`);
@@ -36,7 +36,7 @@ const Paginate = ({ pages, page, route, setPage }) => {
     <Pagination className="d-flex justify-content-center align-items-center">
       {page > 1 && (
         <>
-          <Pagination.First onClick={handleClicFirst} />
+          <Pagination.First onClick={handleClickFirst} />
           <Pagination.Prev onClick={handleClickPrevious} />
         </>
       )}

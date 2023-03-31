@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { getTotalBlogCount } from "../../apis/blog";
 import { getCategories, getCategoryCount } from "../../apis/categories";
 import { pageCounter } from "../../utils/pageCounter";
@@ -18,13 +18,13 @@ const BlogContext = ({ children }) => {
 
   const [categories, setCategories] = useState([]);
   const [totalCategoryPage, setTotalCategoryPage] = useState(0);
-  const [categoryCurrentPage, setCategoryCurrentPage] = useState(0);
+  const [categoryCurrentPage, setCategoryCurrentPage] = useState(-1);
   const categoryPageTracker = useRef(0);
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const getCategoryRef = useRef(false);
-  const getCoutRef = useRef(false);
+  const getCountRef = useRef(false);
 
   // for home page
   const [searchTerm, setSearchTerm] = useState(null);
@@ -40,10 +40,10 @@ const BlogContext = ({ children }) => {
       setPendingBlogsTotalPage(pageCounter(pendingCount, rowsPerPage));
       setTotalCategoryPage(pageCounter(categoryCount, rowsPerPage));
     };
-    if (getCoutRef.current) get();
+    if (getCountRef.current) get();
 
     return () => {
-      getCoutRef.current = true;
+      getCountRef.current = true;
     };
   }, [rowsPerPage]);
 

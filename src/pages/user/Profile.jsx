@@ -1,62 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Col, Row } from "react-bootstrap";
 import { deleteBlog, getMyBlogs, getMyBlogsCount } from "../../apis/blog";
 import { blogContext } from "../../components/context/BlogContext";
 import { userContext } from "../../components/context/UserContext";
 import Avatar from "../../components/shared/avatar/Avatar";
-import CustomAlert from "../../components/shared/customAlert/CustomAlert";
-import Loader from "../../components/shared/loader/Loader";
-import BlogCard from "../../components/user/BlogCard";
+import { getDataFromLS } from "../../utils/localStorage";
 import { pageCounter } from "../../utils/pageCounter";
-
-const DisplayBlogs = ({
-  myBlogs,
-  title,
-  totalPage,
-  currentPage,
-  setCurrentPage,
-  error,
-  setError,
-  loading,
-  handleDeleteBlog,
-}) => {
-  const hadleNextPage = () => {
-    setCurrentPage((prev) => prev + 1);
-  };
-
-  return (
-    <>
-      <h5>
-        <strong>{title}</strong>
-      </h5>
-      <Row
-        className="border-shadow py-4"
-        style={{ height: "500px", overflowY: "auto" }}
-      >
-        {myBlogs.map((blog) => (
-          <Col md={4} sm={12} key={blog?.id} className="my-3">
-            <BlogCard blog={blog} isUser handleDeleteBlog={handleDeleteBlog} />
-          </Col>
-        ))}
-        <div className="text-center">
-          {totalPage > 1 && totalPage - 1 > currentPage && (
-            <Button className="btn-outline-info" onClick={hadleNextPage}>
-              More
-            </Button>
-          )}
-          {loading && <Loader />}
-          {error && (
-            <CustomAlert
-              message={error.message}
-              variant={error.status}
-              setState={setError}
-            />
-          )}
-        </div>
-      </Row>
-    </>
-  );
-};
+import DisplayBlogs from "../../components/profile/DisplayBlogs";
+import DisplayDraftBlogs from "../../components/profile/DisplayDraftBlogs";
 
 const Profile = () => {
   const { rowsPerPage } = useContext(blogContext);
@@ -74,10 +25,17 @@ const Profile = () => {
   const [pendingBlogCurrentPage, setPendingBlogCurrentPage] = useState(0);
   const pendingBlogPageTracker = useRef(-1);
 
+  const [draftBlogs, setDraftBlogs] = useState([]);
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pendingBlogError, setPendingBlogError] = useState(null);
-  const [pendingBlogloading, setPendingBlogLoading] = useState(false);
+  const [pendingBlogLoading, setPendingBlogLoading] = useState(false);
+
+  useEffect(() => {
+    const draft = getDataFromLS("draft-blogs");
+    if (draft) setDraftBlogs(draft);
+  }, []);
 
   useEffect(() => {
     getMyBlogsCount("approved").then((data) => {
@@ -149,24 +107,34 @@ const Profile = () => {
     <section className="pt-2">
       <Row>
         <Col md={3} sm={12} className="border-shadow p-3 rounded">
-          <div className="text-center">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
             <Avatar
               src={userInfo?.img?.display_url}
               alt=""
               styles={{ width: "100px", height: "100px" }}
             />
             <div className="mt-3">
-              <h5>
-                <strong>{userInfo?.username}</strong>
-              </h5>
-              <small>
-                <strong>{userInfo?.email}</strong>
-              </small>
-              <hr style={{ border: "1px solid gray" }} />
+              <div className="text-center">
+                <h5>
+                  <strong>{userInfo?.username}</strong>
+                </h5>
+                <small>
+                  <strong>{userInfo?.email}</strong>
+                </small>
+                <hr style={{ border: "1px solid gray" }} />
+              </div>
               <p>Total Published blog: {totalBlogCount}</p>
               <p className="text-danger">
                 Total Pending blog: {totalPendingBlogCount}
               </p>
+              <p className="text-info">Total draft blog: {draftBlogs.length}</p>
             </div>
           </div>
         </Col>
@@ -191,8 +159,13 @@ const Profile = () => {
             setCurrentPage={setPendingBlogCurrentPage}
             totalPage={totalPendingBlogPage}
             error={pendingBlogError}
-            loading={pendingBlogloading}
+            loading={pendingBlogLoading}
             setError={setPendingBlogError}
+          />
+          <div className="mt-5"></div>
+          <DisplayDraftBlogs
+            draftBlogs={draftBlogs}
+            setDraftBlogs={setDraftBlogs}
           />
         </Col>
       </Row>

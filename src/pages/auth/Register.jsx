@@ -56,7 +56,10 @@ const Register = () => {
       "user"
     );
 
-    if (imgUploadError) return console.log(imgUploadError);
+    if (imgUploadError) {
+      setLoading(false);
+      return alert(imgUploadError?.response?.data?.error?.message || "Image not uploaded!");
+    }
 
     const userData = {
       img,

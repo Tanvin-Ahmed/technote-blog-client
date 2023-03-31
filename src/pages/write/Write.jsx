@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -11,27 +11,12 @@ import Loader from "../../components/shared/loader/Loader";
 import CategoryOptions from "../../components/write/categoryOptions/CategoryOptions";
 import { compressImage } from "../../utils/handleImages/compressImage";
 import { uploadImageInImageBB } from "../../utils/handleImages/uploadImage";
+import {
+  getDataFromLS,
+  setDataInLS,
+  removeDataFromLS,
+} from "../../utils/localStorage";
 import "./write.scss";
-
-const categories = [
-  "Web Development",
-  "App Development",
-  "React.js",
-  "Next.js",
-  "Angular",
-  "Vuejs",
-  "Node.js",
-  "Express.js",
-  "Database",
-  "Electronics",
-  "Artificial Intelligence",
-  "Mechine Learning",
-  "Data Mining",
-  "DataStructures  & Algorithm",
-  "Cloud Computing",
-  "Technology",
-  "Programming language",
-];
 
 const Write = () => {
   const [searchParams] = useSearchParams();
@@ -43,7 +28,10 @@ const Write = () => {
   const [img, setImg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState({});
+  const [draftAlert, setDraftAlert] = useState(false);
+  const [saveDraft, setSaveDraft] = useState(false);
 
+  // get blog data
   useEffect(() => {
     if (!searchParams.get("edit")) return;
 
@@ -63,6 +51,19 @@ const Write = () => {
     };
 
     get();
+  }, [searchParams]);
+
+  // fetch draft blog data
+  useEffect(() => {
+    if (!searchParams.get("draft")) return;
+
+    const draft = getDataFromLS("draft-blogs");
+    if (draft) {
+      const blogData = draft[Number(searchParams.get("draft"))];
+      setText(blogData.description);
+      setTitle(blogData.title);
+      setSelectedCategory(blogData.category);
+    }
   }, [searchParams]);
 
   const handleCreate = async () => {
@@ -96,8 +97,20 @@ const Write = () => {
     const { blog, errorMessage } = await uploadBlog(blogForm);
     const successMessage =
       "Thank you to post a blog. Please wait for publish your blog by authority of Tech Blog";
-    if (blog) setUploadStatus({ message: successMessage, status: "success" });
-    else setUploadStatus({ message: errorMessage, status: "danger" });
+    if (blog) {
+      setUploadStatus({ message: successMessage, status: "success" });
+      if (searchParams.get("draft")) {
+        const data = getDataFromLS("draft-blogs");
+        if (data) {
+          if (data.length === 0) removeDataFromLS("draft-blogs");
+          else
+            setDataInLS(
+              data.filter((b, i) => i !== Number(searchParams.get("draft"))),
+              "draft-blogs"
+            );
+        }
+      }
+    } else setUploadStatus({ message: errorMessage, status: "danger" });
   };
 
   const handleUpdate = async () => {
@@ -153,6 +166,47 @@ const Write = () => {
     setLoading(false);
   };
 
+  const handleSaveAsDraft = () => {
+    const blogData = {
+      title,
+      description: text,
+      createAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      updateAt: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      category: selectedCategory,
+      status: "draft",
+    };
+    const data = getDataFromLS("draft-blogs");
+    if (searchParams.get("draft")) {
+      data[Number(searchParams.get("draft"))] = blogData;
+      setDataInLS(data, "draft-blogs");
+      setSaveDraft(true);
+    } else {
+      if (data) {
+        if (data.length === 5) {
+          setDraftAlert(true);
+        } else {
+          setDataInLS([...data, blogData], "draft-blogs");
+          setSaveDraft(true);
+        }
+      } else {
+        setDataInLS([blogData], "draft-blogs");
+        setSaveDraft(true);
+      }
+    }
+  };
+
+  const handleAllowDeleteFromDraftAndInsertNew = () => {
+    const data = getDataFromLS("draft-blogs");
+    const newArr = [];
+
+    for (let i = 1; i < data.length; i++) {
+      newArr.push(data[i]);
+    }
+    newArr.push(data);
+    setDataInLS(newArr, "draft-blogs");
+    setSaveDraft(true);
+  };
+
   return error ? (
     <CustomAlert message={error} variant={"danger"} />
   ) : (
@@ -183,7 +237,7 @@ const Write = () => {
               )}
               <div
                 className="editorContainer mt-4 border-shadow"
-                style={{ height: "500px" }}
+                style={{ height: "500px", overflow: "hidden" }}
               >
                 <ReactQuill
                   style={{ height: "457px" }}
@@ -206,7 +260,11 @@ const Write = () => {
               </span>
               <DragAndDropImg setImage={setImg} />
               <div className="d-flex justify-content-between align-items-center pt-3">
-                <Button className="btn-outline-warning" size="sm">
+                <Button
+                  className="btn-outline-warning"
+                  size="sm"
+                  onClick={handleSaveAsDraft}
+                >
                   Save as a draft
                 </Button>
                 <Button className="btn-outline-info" size="sm" type="submit">
@@ -224,6 +282,34 @@ const Write = () => {
                       setState={setUploadStatus}
                     />
                   )
+                )}
+                {draftAlert && (
+                  <div class="alert alert-dismissible alert-secondary">
+                    <div className="display-flex flex-column justify-content-center align-items-center">
+                      <div>
+                        <strong className="text-danger">
+                          Draft storage full!
+                        </strong>{" "}
+                        Please confirm the oldest draft to delete for insert new
+                        draft.
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        size="sm"
+                        onClick={handleAllowDeleteFromDraftAndInsertNew}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {saveDraft && (
+                  <CustomAlert
+                    variant={"success"}
+                    message={"Save as draft!"}
+                    setState={setSaveDraft}
+                  />
                 )}
               </div>
               <CategoryOptions

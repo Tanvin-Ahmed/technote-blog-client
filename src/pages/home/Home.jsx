@@ -1,7 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { getAllBlogs } from "../../apis/blog";
+import {
+  getAllBlogs,
+  getTotalSearchedBlogCount,
+  getTotalSearchedCategoryWiseBlogCount,
+} from "../../apis/blog";
 import { blogContext } from "../../components/context/BlogContext";
 import SearchBox from "../../components/home/searchBox/SearchBox";
 import CustomAlert from "../../components/shared/customAlert/CustomAlert";
@@ -9,6 +13,7 @@ import Loader from "../../components/shared/loader/Loader";
 import TimeStamp from "../../components/shared/timeStapm/TimeStamp";
 import { getSubString } from "../../utils/getSubString";
 import { textToHtml } from "../../utils/textToHtml";
+import { pageCounter } from "../../utils/pageCounter";
 import "./home.scss";
 
 const Home = () => {
@@ -35,6 +40,17 @@ const Home = () => {
 
   const searchBlogs = async () => {
     setLoading(true);
+    if (typeof searchTerm === "string") {
+      const { count } = await getTotalSearchedBlogCount("approved", searchTerm);
+      setApprovedBlogsCurrentPage(pageCounter(count, rowsPerPage));
+    } else if (typeof searchTerm === "object") {
+      const { count } = await getTotalSearchedCategoryWiseBlogCount(
+        "approved",
+        searchTerm.id
+      );
+      setApprovedBlogsCurrentPage(pageCounter(count, rowsPerPage));
+    }
+
     const { blogs, errorMessage } = await getAllBlogs(
       typeof searchTerm === "object" ? searchTerm.id : "",
       "approved",
@@ -54,9 +70,7 @@ const Home = () => {
     }
     setError(errorMessage);
     setLoading(false);
-
-    setApprovedBlogsCurrentPage(1);
-    blogPageTracker.current = 1;
+    blogPageTracker.current = -1;
   };
 
   useEffect(() => {
@@ -79,19 +93,15 @@ const Home = () => {
       setError(errorMessage);
       setLoading(false);
     };
-    if (blogPageTracker.current === -1) {
+    if (blogPageTracker.current === -1 && !searchTerm) {
       get();
-      setApprovedBlogsCurrentPage(1);
-      blogPageTracker.current++;
     }
   }, [
     approvedBlogsCurrentPage,
     rowsPerPage,
     setApprovedBlogs,
     blogPageTracker,
-    setApprovedBlogsCurrentPage,
     searchTerm,
-    searchArea,
   ]);
 
   const loadMore = async () => {
@@ -100,10 +110,14 @@ const Home = () => {
 
       setLoading(true);
       const { blogs, errorMessage } = await getAllBlogs(
-        searchArea === "category" ? searchTerm.id : "",
+        searchArea === "category"
+          ? typeof searchTerm === "object"
+            ? searchTerm.id
+            : ""
+          : "",
         "approved",
         rowsPerPage,
-        approvedBlogsCurrentPage * rowsPerPage,
+        (approvedBlogsCurrentPage + 1) * rowsPerPage,
         typeof searchTerm === "string" ? searchTerm : ""
       );
       if (blogs.length) {
@@ -112,6 +126,7 @@ const Home = () => {
           img: JSON.parse(blog.img),
         }));
         setApprovedBlogs((prev) => [...prev, ...blogsData]);
+        setApprovedBlogsCurrentPage((p) => p + 1);
       }
       setError(errorMessage);
       setLoading(false);

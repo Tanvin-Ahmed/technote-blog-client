@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import TimeStamp from "../shared/timeStapm/TimeStamp";
@@ -28,10 +27,10 @@ const BlogCard = ({ blog, isUser, handleDeleteBlog }) => {
         </strong>
       </Card.Text>
       <Card.Footer>
-        <div className="d-flex justify-content-between align-items center">
+        <div className="d-flex justify-content-between align-items center flex-wrap">
           <Button
             size="sm"
-            className="btn-outline-info"
+            className="btn-outline-info my-2"
             onClick={handleViewRoute}
           >
             View
@@ -40,14 +39,14 @@ const BlogCard = ({ blog, isUser, handleDeleteBlog }) => {
             <>
               <Button
                 size="sm"
-                className="btn-outline-warning"
+                className="btn-outline-warning my-2"
                 onClick={handleEditRoute}
               >
                 Update
               </Button>
               <Button
                 size="sm"
-                className="btn-outline-danger"
+                className="btn-outline-danger my-2"
                 onClick={() => handleDeleteBlog(blog.id, blog.status)}
               >
                 Delete

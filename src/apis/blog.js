@@ -56,6 +56,42 @@ export const getTotalBlogCount = async (status) => {
   }
 };
 
+export const getTotalSearchedBlogCount = async (status, search) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `/post/get-searched-count?status=${status}&search=${search}`
+    );
+
+    return {
+      count: data.count,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      count: 0,
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
+export const getTotalSearchedCategoryWiseBlogCount = async (status, search) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `/post/get-searched-category-wise-blog-count?status=${status}&search=${search}`
+    );
+
+    return {
+      count: data.count,
+      errorMessage: null,
+    };
+  } catch (error) {
+    return {
+      count: 0,
+      errorMessage: error.response.data.message || error.message,
+    };
+  }
+};
+
 export const getTotalBlogCountByCategory = async (category) => {
   try {
     const { data } = await axiosInstance.get(
