@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { postComment } from "../../apis/comment";
 import CustomAlert from "../shared/customAlert/CustomAlert";
 
-const CommentForm = ({ blogId, setComments, setPageCount }) => {
+const CommentForm = ({ blogId, setComments, setPageCount, totalPages }) => {
   const [cursor, setCursor] = useState(false);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,12 +27,15 @@ const CommentForm = ({ blogId, setComments, setPageCount }) => {
       if (data.errorMessage) {
         setError({ message: data.errorMessage, status: "danger" });
       } else {
-        const comment = {
-          ...data.comment,
-          authorImg: JSON.parse(data.comment.authorImg),
-        };
-        setComments((prev) => [comment, ...prev]);
-        setPageCount((prev) => (prev === 0 ? 1 : prev));
+        if (totalPages > 0) {
+          const comment = {
+            ...data.comment,
+            authorImg: JSON.parse(data.comment.authorImg),
+          };
+          setComments((prev) => [comment, ...prev]);
+        } else {
+          setPageCount(1);
+        }
       }
       setLoading(false);
     });

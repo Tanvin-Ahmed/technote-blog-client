@@ -1,6 +1,6 @@
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteBlog, getSingleBlog } from "../../apis/blog";
@@ -157,6 +157,7 @@ const Single = () => {
                   blogId={blogData.id}
                   setComments={setComments}
                   setPageCount={setTotalCommentsPage}
+                  totalPages={totalCommentsPage}
                 />
               ) : null}
               <h3>Comments</h3>
