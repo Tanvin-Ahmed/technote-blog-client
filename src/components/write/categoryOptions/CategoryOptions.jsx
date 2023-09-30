@@ -1,4 +1,4 @@
-import React, { useContext, useState, useTransition } from "react";
+import { useContext, useState, useTransition } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 import { getCategories, getCategoriesBySearch } from "../../../apis/categories";
 import { blogContext } from "../../context/BlogContext";

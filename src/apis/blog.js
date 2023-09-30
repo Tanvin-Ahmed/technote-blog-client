@@ -11,7 +11,7 @@ export const uploadBlog = async (info) => {
   } catch (error) {
     return {
       blog: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -35,7 +35,7 @@ export const getAllBlogs = async (
   } catch (error) {
     return {
       blogs: [],
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -51,7 +51,7 @@ export const getTotalBlogCount = async (status) => {
   } catch (error) {
     return {
       count: 0,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -69,7 +69,7 @@ export const getTotalSearchedBlogCount = async (status, search) => {
   } catch (error) {
     return {
       count: 0,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -87,7 +87,7 @@ export const getTotalSearchedCategoryWiseBlogCount = async (status, search) => {
   } catch (error) {
     return {
       count: 0,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -105,7 +105,7 @@ export const getTotalBlogCountByCategory = async (category) => {
   } catch (error) {
     return {
       count: 0,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -123,7 +123,7 @@ export const getMyBlogsCount = async (status) => {
   } catch (error) {
     return {
       count: 0,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -141,7 +141,7 @@ export const getMyBlogs = async (status, limit, offset) => {
   } catch (error) {
     return {
       blogs: [],
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -157,7 +157,7 @@ export const getSingleBlog = async (id) => {
   } catch (error) {
     return {
       blog: {},
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -172,7 +172,7 @@ export const updateBlog = async (updateInfo) => {
   } catch (error) {
     return {
       message: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -187,7 +187,7 @@ export const approveBlog = async (updateInfo) => {
   } catch (error) {
     return {
       message: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -203,7 +203,7 @@ export const deleteBlog = async (id) => {
   } catch (error) {
     return {
       message: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };

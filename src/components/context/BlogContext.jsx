@@ -23,8 +23,8 @@ const BlogContext = ({ children }) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const getCategoryRef = useRef(false);
-  const getCountRef = useRef(false);
+  const [loadCategory, setLoadCategory] = useState(false);
+  const [loadAllCounts, setAllCounts] = useState(false);
 
   // for home page
   const [searchTerm, setSearchTerm] = useState(null);
@@ -36,28 +36,32 @@ const BlogContext = ({ children }) => {
       const { count: pendingCount } = await getTotalBlogCount("pending");
       const { count: categoryCount } = await getCategoryCount();
 
+      console.log(approveCount, pendingCount, categoryCount);
+
       setApprovedBlogsTotalPage(pageCounter(approveCount, rowsPerPage));
       setPendingBlogsTotalPage(pageCounter(pendingCount, rowsPerPage));
       setTotalCategoryPage(pageCounter(categoryCount, rowsPerPage));
     };
-    if (getCountRef.current) get();
+    // if (loadAllCounts)
+    get();
 
-    return () => {
-      getCountRef.current = true;
-    };
+    // return () => {
+    //   setAllCounts(true);
+    // };
   }, [rowsPerPage]);
 
   useEffect(() => {
-    if (getCategoryRef.current) {
-      getCategories(rowsPerPage, 0).then((data) => {
-        setCategories(data.categories);
-        setCategoryCurrentPage((prev) => prev + 1);
-      });
-    }
+    // if (loadCategory) {
+    getCategories(rowsPerPage, 0).then((data) => {
+      setCategories(data.categories);
+      console.log(data.categories);
+      setCategoryCurrentPage((prev) => prev + 1);
+    });
+    // }
 
-    return () => {
-      getCategoryRef.current = true;
-    };
+    // return () => {
+    //   setLoadCategory(true);
+    // };
   }, [rowsPerPage]);
 
   const values = {

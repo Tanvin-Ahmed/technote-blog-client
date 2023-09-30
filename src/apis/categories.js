@@ -10,9 +10,10 @@ export const getCategories = async (limit, offset) => {
       errorMessage: null,
     };
   } catch (error) {
+    console.log("Categories error: ", error);
     return {
       categories: [],
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -43,7 +44,7 @@ export const getCategoryCount = async () => {
   } catch (error) {
     return {
       count: 0,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -61,7 +62,7 @@ export const createNewCategory = async (category) => {
   } catch (error) {
     return {
       category: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -77,7 +78,7 @@ export const deleteCategory = async (id) => {
   } catch (error) {
     return {
       message: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
@@ -93,7 +94,7 @@ export const updateCategory = async (info) => {
   } catch (error) {
     return {
       category: null,
-      errorMessage: error.response.data.message || error.message,
+      errorMessage: error?.response?.data?.message || error.message,
     };
   }
 };
