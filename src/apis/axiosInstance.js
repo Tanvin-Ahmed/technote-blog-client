@@ -2,7 +2,7 @@ import axios from "axios";
 import { getDataFromLS } from "../utils/localStorage";
 
 const instance = axios.create({
-  baseURL: "http://localhost:4000/api/",
+  baseURL: "https://technote-blog-server.vercel.app/api/",
   withCredentials: true,
 });
 
