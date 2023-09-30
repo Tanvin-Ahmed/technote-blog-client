@@ -1,6 +1,6 @@
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useState, useTransition } from "react";
+import { useContext, useState, useTransition } from "react";
 import { Button, Form, InputGroup, Spinner } from "react-bootstrap";
 import {
   createNewCategory,

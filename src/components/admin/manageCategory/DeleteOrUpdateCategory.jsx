@@ -185,10 +185,10 @@ const DeleteOrUpdateCategory = () => {
       ) : null}
 
       <Card className="p-3 w-100 mt-3">
+        <p>Total categories: {categories.length || 0}</p>
         <Table striped bordered hover size="sm">
           <thead>
             <tr className="text-center">
-              <th>Id</th>
               <th>Category</th>
               <th>Manage</th>
             </tr>
@@ -204,9 +204,8 @@ const DeleteOrUpdateCategory = () => {
                 categoryCurrentPage * rowsPerPage,
                 categoryCurrentPage * rowsPerPage + rowsPerPage
               )
-              .map((category) => (
+              .map((category, i) => (
                 <tr key={category?.id} className="text-center">
-                  <td>{category?.id}</td>
                   <td>{category?.category_name}</td>
                   <td>
                     <div className="d-flex justify-content-center align-items-center gap-2">
