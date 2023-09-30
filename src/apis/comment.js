@@ -76,10 +76,10 @@ export const updateComment = async (info) => {
   }
 };
 
-export const deleteComment = async (id, userId, adminId) => {
+export const deleteComment = async (id, userId) => {
   try {
     const { data } = await axiosInstance.delete(
-      `/comments/delete?id=${id}&user_id=${userId}&admin_id=${adminId}`
+      `/comments/delete?id=${id}&user_id=${userId}`
     );
 
     return {

@@ -5,7 +5,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { deleteComment, updateComment } from "../../apis/comment";
 import { userContext } from "../context/UserContext";
@@ -41,7 +41,7 @@ const Comment = ({ comment, setComments }) => {
 
   const handleDeleteComment = () => {
     setLoading(true);
-    deleteComment(comment.id, userInfo.id, comment.admins_id).then((data) => {
+    deleteComment(comment.id, userInfo.id).then((data) => {
       if (data.errorMessage) {
         setError({ message: data.errorMessage, status: "danger" });
       } else {

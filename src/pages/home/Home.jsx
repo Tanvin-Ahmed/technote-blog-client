@@ -149,7 +149,7 @@ const Home = () => {
                       <Col md={"4"} sm={"12"}>
                         <Card.Img
                           src={post?.img?.display_url}
-                          className="card-img border-shadow"
+                          className="card-img border-shadow h-100"
                           alt="blog img"
                         />
                       </Col>

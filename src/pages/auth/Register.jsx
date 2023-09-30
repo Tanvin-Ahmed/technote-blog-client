@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { register } from "../../apis/auth";
@@ -58,7 +58,9 @@ const Register = () => {
 
     if (imgUploadError) {
       setLoading(false);
-      return alert(imgUploadError?.response?.data?.error?.message || "Image not uploaded!");
+      return alert(
+        imgUploadError?.response?.data?.error?.message || "Image not uploaded!"
+      );
     }
 
     const userData = {
@@ -78,7 +80,7 @@ const Register = () => {
 
   return (
     <Container>
-      <div className="form-container my-5">
+      <div className="form-container" style={{ margin: "13rem 0" }}>
         <div className="card p-4 main">
           <div className="text-center">
             <Avatar

@@ -1,6 +1,6 @@
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useEffect, useState, useTransition } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import { Button, Card, Form, InputGroup, Table } from "react-bootstrap";
 import { getTotalBlogCountByCategory } from "../../../apis/blog";
 import {
@@ -47,7 +47,6 @@ const DeleteOrUpdateCategory = () => {
       categoryPageTracker.current++;
     }
   }, [rowsPerPage, setCategories, categoryCurrentPage, categoryPageTracker]);
-
 
   const handleSelectCategory = (info) => {
     setSelectedCategory(info);
@@ -195,7 +194,12 @@ const DeleteOrUpdateCategory = () => {
             </tr>
           </thead>
           <tbody>
-            {(foundCategories.length > 0 ? foundCategories : categories)
+            {(categoryName
+              ? foundCategories.length > 0
+                ? foundCategories
+                : []
+              : categories
+            )
               .slice(
                 categoryCurrentPage * rowsPerPage,
                 categoryCurrentPage * rowsPerPage + rowsPerPage
@@ -226,7 +230,7 @@ const DeleteOrUpdateCategory = () => {
               ))}
           </tbody>
         </Table>
-        {!foundCategories.length && (
+        {!foundCategories.length && !categoryName && (
           <div className="mt-3">
             <Paginate
               pages={totalCategoryPage}

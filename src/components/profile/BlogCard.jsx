@@ -14,18 +14,20 @@ const BlogCard = ({ blog, isUser, handleDeleteBlog }) => {
   };
 
   return (
-    <Card className="rounded p-2">
+    <Card className="rounded p-2 h-100">
       <Card.Img
         src={blog?.img?.display_url}
         className="w-100 rounded"
         style={{ height: "150px", objectFit: "cover" }}
       />
-      <Card.Title>{blog?.title}</Card.Title>
-      <Card.Text>
-        <strong>
-          <TimeStamp createAt={blog?.createAt} updateAt={blog?.updateAt} />
-        </strong>
-      </Card.Text>
+      <Card.Body>
+        <Card.Title>{blog?.title}</Card.Title>
+        <Card.Text>
+          <strong>
+            <TimeStamp createAt={blog?.createAt} updateAt={blog?.updateAt} />
+          </strong>
+        </Card.Text>
+      </Card.Body>
       <Card.Footer>
         <div className="d-flex justify-content-between align-items center flex-wrap">
           <Button
