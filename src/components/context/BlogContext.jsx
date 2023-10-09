@@ -36,8 +36,6 @@ const BlogContext = ({ children }) => {
       const { count: pendingCount } = await getTotalBlogCount("pending");
       const { count: categoryCount } = await getCategoryCount();
 
-      console.log(approveCount, pendingCount, categoryCount);
-
       setApprovedBlogsTotalPage(pageCounter(approveCount, rowsPerPage));
       setPendingBlogsTotalPage(pageCounter(pendingCount, rowsPerPage));
       setTotalCategoryPage(pageCounter(categoryCount, rowsPerPage));
@@ -54,7 +52,6 @@ const BlogContext = ({ children }) => {
     // if (loadCategory) {
     getCategories(rowsPerPage, 0).then((data) => {
       setCategories(data.categories);
-      console.log(data.categories);
       setCategoryCurrentPage((prev) => prev + 1);
     });
     // }

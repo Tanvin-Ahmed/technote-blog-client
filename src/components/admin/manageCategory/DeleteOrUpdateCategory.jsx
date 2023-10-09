@@ -137,6 +137,11 @@ const DeleteOrUpdateCategory = () => {
     }
   };
 
+  console.log(
+    "categoryCurrentPage: " + categoryCurrentPage,
+    "rowsPerPage: " + rowsPerPage
+  );
+
   return (
     <div className="w-100 d-flex justify-content-center align-items-center flex-column p-3 rounded border-shadow">
       <h3>Update or Delete Category</h3>
@@ -194,12 +199,7 @@ const DeleteOrUpdateCategory = () => {
             </tr>
           </thead>
           <tbody>
-            {(categoryName
-              ? foundCategories.length > 0
-                ? foundCategories
-                : []
-              : categories
-            )
+            {(categoryName ? foundCategories : categories)
               .slice(
                 categoryCurrentPage * rowsPerPage,
                 categoryCurrentPage * rowsPerPage + rowsPerPage
